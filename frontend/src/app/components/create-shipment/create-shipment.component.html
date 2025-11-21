@@ -2,70 +2,193 @@
   <div class="container">
     <div class="page-header">
       <h1><i class="fas fa-box"></i> Create a Shipment</h1>
-      <p>Fill in the details below to create your shipment</p>
+      <p>Fill in the details below to create your shipment request</p>
     </div>
 
     <div class="row">
       <div class="col-lg-8">
         <div class="shipment-form-card">
           <form [formGroup]="shipmentForm" (ngSubmit)="onSubmit()">
-            <!-- Origin Section -->
+            
+            <!-- Sender Information -->
             <div class="form-section">
-              <h3><i class="fas fa-map-marker-alt"></i> Origin Information</h3>
+              <h3><i class="fas fa-user"></i> Sender Information</h3>
               <div class="row">
                 <div class="col-md-6 mb-3">
-                  <label class="form-label">Origin Country *</label>
+                  <label class="form-label">Full Name *</label>
                   <input type="text" 
                          class="form-control" 
-                         formControlName="originCountry"
-                         [class.is-invalid]="f['originCountry'].invalid && f['originCountry'].touched"
-                         placeholder="e.g., Sierra Leone">
-                  <div class="invalid-feedback" *ngIf="f['originCountry'].invalid && f['originCountry'].touched">
-                    <span *ngIf="f['originCountry'].errors?.['required']">Origin country is required</span>
-                    <span *ngIf="f['originCountry'].errors?.['minlength']">Minimum 2 characters required</span>
+                         formControlName="senderName"
+                         [class.is-invalid]="isFieldInvalid('senderName')"
+                         placeholder="John Doe">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('senderName')">
+                    {{ getErrorMessage('senderName') }}
                   </div>
                 </div>
                 <div class="col-md-6 mb-3">
-                  <label class="form-label">Origin Address *</label>
-                  <input type="text" 
+                  <label class="form-label">Phone Number *</label>
+                  <input type="tel" 
                          class="form-control" 
-                         formControlName="originAddress"
-                         [class.is-invalid]="f['originAddress'].invalid && f['originAddress'].touched"
-                         placeholder="Full address">
-                  <div class="invalid-feedback" *ngIf="f['originAddress'].invalid && f['originAddress'].touched">
-                    <span *ngIf="f['originAddress'].errors?.['required']">Origin address is required</span>
-                    <span *ngIf="f['originAddress'].errors?.['minlength']">Minimum 5 characters required</span>
+                         formControlName="senderPhone"
+                         [class.is-invalid]="isFieldInvalid('senderPhone')"
+                         placeholder="+23276123456">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('senderPhone')">
+                    {{ getErrorMessage('senderPhone') }}
+                  </div>
+                </div>
+                <div class="col-md-12 mb-3">
+                  <label class="form-label">Email Address *</label>
+                  <input type="email" 
+                         class="form-control" 
+                         formControlName="senderEmail"
+                         [class.is-invalid]="isFieldInvalid('senderEmail')"
+                         placeholder="john@example.com">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('senderEmail')">
+                    {{ getErrorMessage('senderEmail') }}
                   </div>
                 </div>
               </div>
             </div>
 
-            <!-- Destination Section -->
+            <!-- Origin Information -->
             <div class="form-section">
-              <h3><i class="fas fa-location-arrow"></i> Destination Information</h3>
+              <h3><i class="fas fa-map-marker-alt"></i> Origin (Pickup Location)</h3>
               <div class="row">
                 <div class="col-md-6 mb-3">
-                  <label class="form-label">Destination Country *</label>
-                  <input type="text" 
-                         class="form-control" 
-                         formControlName="destinationCountry"
-                         [class.is-invalid]="f['destinationCountry'].invalid && f['destinationCountry'].touched"
-                         placeholder="e.g., United States">
-                  <div class="invalid-feedback" *ngIf="f['destinationCountry'].invalid && f['destinationCountry'].touched">
-                    <span *ngIf="f['destinationCountry'].errors?.['required']">Destination country is required</span>
-                    <span *ngIf="f['destinationCountry'].errors?.['minlength']">Minimum 2 characters required</span>
+                  <label class="form-label">Country *</label>
+                  <select class="form-select" 
+                          formControlName="originCountry"
+                          [class.is-invalid]="isFieldInvalid('originCountry')">
+                    <option value="">Select Country</option>
+                    <option *ngFor="let country of countries" [value]="country">{{ country }}</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('originCountry')">
+                    {{ getErrorMessage('originCountry') }}
                   </div>
                 </div>
                 <div class="col-md-6 mb-3">
-                  <label class="form-label">Destination Address *</label>
+                  <label class="form-label">City *</label>
+                  <input type="text" 
+                         class="form-control" 
+                         formControlName="originCity"
+                         [class.is-invalid]="isFieldInvalid('originCity')"
+                         placeholder="Freetown">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('originCity')">
+                    {{ getErrorMessage('originCity') }}
+                  </div>
+                </div>
+                <div class="col-md-8 mb-3">
+                  <label class="form-label">Street Address *</label>
+                  <input type="text" 
+                         class="form-control" 
+                         formControlName="originAddress"
+                         [class.is-invalid]="isFieldInvalid('originAddress')"
+                         placeholder="123 Main Street, Building A">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('originAddress')">
+                    {{ getErrorMessage('originAddress') }}
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label class="form-label">Postal Code</label>
+                  <input type="text" 
+                         class="form-control" 
+                         formControlName="originPostalCode"
+                         [class.is-invalid]="isFieldInvalid('originPostalCode')"
+                         placeholder="00000">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('originPostalCode')">
+                    {{ getErrorMessage('originPostalCode') }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recipient Information -->
+            <div class="form-section">
+              <h3><i class="fas fa-user-check"></i> Recipient Information</h3>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Full Name *</label>
+                  <input type="text" 
+                         class="form-control" 
+                         formControlName="recipientName"
+                         [class.is-invalid]="isFieldInvalid('recipientName')"
+                         placeholder="Jane Smith">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('recipientName')">
+                    {{ getErrorMessage('recipientName') }}
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Phone Number *</label>
+                  <input type="tel" 
+                         class="form-control" 
+                         formControlName="recipientPhone"
+                         [class.is-invalid]="isFieldInvalid('recipientPhone')"
+                         placeholder="+1234567890">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('recipientPhone')">
+                    {{ getErrorMessage('recipientPhone') }}
+                  </div>
+                </div>
+                <div class="col-md-12 mb-3">
+                  <label class="form-label">Email Address (Optional)</label>
+                  <input type="email" 
+                         class="form-control" 
+                         formControlName="recipientEmail"
+                         [class.is-invalid]="isFieldInvalid('recipientEmail')"
+                         placeholder="jane@example.com">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('recipientEmail')">
+                    {{ getErrorMessage('recipientEmail') }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Destination Information -->
+            <div class="form-section">
+              <h3><i class="fas fa-location-arrow"></i> Destination (Delivery Location)</h3>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Country *</label>
+                  <select class="form-select" 
+                          formControlName="destinationCountry"
+                          [class.is-invalid]="isFieldInvalid('destinationCountry')">
+                    <option value="">Select Country</option>
+                    <option *ngFor="let country of countries" [value]="country">{{ country }}</option>
+                  </select>
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('destinationCountry')">
+                    {{ getErrorMessage('destinationCountry') }}
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">City *</label>
+                  <input type="text" 
+                         class="form-control" 
+                         formControlName="destinationCity"
+                         [class.is-invalid]="isFieldInvalid('destinationCity')"
+                         placeholder="New York">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('destinationCity')">
+                    {{ getErrorMessage('destinationCity') }}
+                  </div>
+                </div>
+                <div class="col-md-8 mb-3">
+                  <label class="form-label">Street Address *</label>
                   <input type="text" 
                          class="form-control" 
                          formControlName="destinationAddress"
-                         [class.is-invalid]="f['destinationAddress'].invalid && f['destinationAddress'].touched"
-                         placeholder="Full address">
-                  <div class="invalid-feedback" *ngIf="f['destinationAddress'].invalid && f['destinationAddress'].touched">
-                    <span *ngIf="f['destinationAddress'].errors?.['required']">Destination address is required</span>
-                    <span *ngIf="f['destinationAddress'].errors?.['minlength']">Minimum 5 characters required</span>
+                         [class.is-invalid]="isFieldInvalid('destinationAddress')"
+                         placeholder="456 Park Avenue, Apt 5B">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('destinationAddress')">
+                    {{ getErrorMessage('destinationAddress') }}
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <label class="form-label">Postal Code</label>
+                  <input type="text" 
+                         class="form-control" 
+                         formControlName="destinationPostalCode"
+                         [class.is-invalid]="isFieldInvalid('destinationPostalCode')"
+                         placeholder="10001">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('destinationPostalCode')">
+                    {{ getErrorMessage('destinationPostalCode') }}
                   </div>
                 </div>
               </div>
@@ -75,60 +198,179 @@
             <div class="form-section">
               <h3><i class="fas fa-box-open"></i> Package Details</h3>
               <div class="row">
-                <div class="col-md-4 mb-3">
+                <div class="col-md-6 mb-3">
                   <label class="form-label">Product Type *</label>
-                  <select class="form-select" formControlName="productTypeId">
+                  <select class="form-select" 
+                          formControlName="productTypeId"
+                          [class.is-invalid]="isFieldInvalid('productTypeId')">
                     <option *ngFor="let type of productTypes" [value]="type.id">
-                      {{ type.name }}
+                      {{ type.name }} - {{ type.description }}
                     </option>
                   </select>
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('productTypeId')">
+                    {{ getErrorMessage('productTypeId') }}
+                  </div>
                 </div>
-                <div class="col-md-4 mb-3">
+                <div class="col-md-3 mb-3">
                   <label class="form-label">Weight (kg) *</label>
                   <input type="number" 
                          class="form-control" 
                          formControlName="weight"
-                         [class.is-invalid]="f['weight'].invalid && f['weight'].touched"
+                         [class.is-invalid]="isFieldInvalid('weight')"
                          placeholder="0.0" 
-                         step="0.1">
-                  <div class="invalid-feedback" *ngIf="f['weight'].invalid && f['weight'].touched">
-                    <span *ngIf="f['weight'].errors?.['required']">Weight is required</span>
-                    <span *ngIf="f['weight'].errors?.['min']">Minimum weight is 0.1 kg</span>
-                    <span *ngIf="f['weight'].errors?.['max']">Maximum weight is 1000 kg</span>
+                         step="0.1"
+                         min="0.1"
+                         max="500">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('weight')">
+                    {{ getErrorMessage('weight') }}
                   </div>
+                  <small class="text-muted">Min: 0.1kg, Max: 500kg</small>
                 </div>
-                <div class="col-md-4 mb-3">
+                <div class="col-md-3 mb-3">
                   <label class="form-label">Quantity *</label>
                   <input type="number" 
                          class="form-control" 
                          formControlName="quantity"
-                         [class.is-invalid]="f['quantity'].invalid && f['quantity'].touched"
+                         [class.is-invalid]="isFieldInvalid('quantity')"
                          placeholder="1" 
-                         min="1">
-                  <div class="invalid-feedback" *ngIf="f['quantity'].invalid && f['quantity'].touched">
-                    <span *ngIf="f['quantity'].errors?.['required']">Quantity is required</span>
-                    <span *ngIf="f['quantity'].errors?.['min']">Minimum quantity is 1</span>
+                         min="1"
+                         max="100">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('quantity')">
+                    {{ getErrorMessage('quantity') }}
                   </div>
+                  <small class="text-muted">Min: 1, Max: 100</small>
                 </div>
               </div>
+
+              <!-- Dimensions -->
+              <div class="row">
+                <div class="col-md-12 mb-2">
+                  <label class="form-label">Dimensions (cm) - Optional but recommended</label>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <input type="number" 
+                         class="form-control" 
+                         formControlName="length"
+                         [class.is-invalid]="isFieldInvalid('length')"
+                         placeholder="Length"
+                         min="1"
+                         max="300">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('length')">
+                    {{ getErrorMessage('length') }}
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <input type="number" 
+                         class="form-control" 
+                         formControlName="width"
+                         [class.is-invalid]="isFieldInvalid('width')"
+                         placeholder="Width"
+                         min="1"
+                         max="300">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('width')">
+                    {{ getErrorMessage('width') }}
+                  </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                  <input type="number" 
+                         class="form-control" 
+                         formControlName="height"
+                         [class.is-invalid]="isFieldInvalid('height')"
+                         placeholder="Height"
+                         min="1"
+                         max="300">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('height')">
+                    {{ getErrorMessage('height') }}
+                  </div>
+                </div>
+                <div class="col-md-12" *ngIf="calculateVolume() > 0">
+                  <small class="text-info">
+                    <i class="fas fa-cube"></i> Volume: {{ calculateVolume() | number:'1.0-0' }} cm³
+                  </small>
+                </div>
+              </div>
+
+              <!-- Description -->
               <div class="mb-3">
-                <label class="form-label">Description (Optional)</label>
+                <label class="form-label">Package Description *</label>
                 <textarea class="form-control" 
                           formControlName="description" 
                           rows="3"
-                          [class.is-invalid]="f['description'].invalid && f['description'].touched"
-                          placeholder="Describe your shipment contents"></textarea>
-                <div class="invalid-feedback" *ngIf="f['description'].invalid && f['description'].touched">
-                  <span *ngIf="f['description'].errors?.['maxlength']">Maximum 500 characters allowed</span>
+                          [class.is-invalid]="isFieldInvalid('description')"
+                          placeholder="Describe the contents of your package (minimum 10 characters)"></textarea>
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('description')">
+                  {{ getErrorMessage('description') }}
                 </div>
+                <small class="text-muted">{{ f['description'].value?.length || 0 }}/500 characters</small>
+              </div>
+
+              <!-- Declared Value -->
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <label class="form-label">Declared Value (SLL)</label>
+                  <input type="number" 
+                         class="form-control" 
+                         formControlName="declaredValue"
+                         [class.is-invalid]="isFieldInvalid('declaredValue')"
+                         placeholder="0"
+                         min="0"
+                         max="1000000">
+                  <div class="invalid-feedback" *ngIf="isFieldInvalid('declaredValue')">
+                    {{ getErrorMessage('declaredValue') }}
+                  </div>
+                  <small class="text-muted">For insurance purposes</small>
+                </div>
+              </div>
+
+              <!-- Checkboxes -->
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" 
+                           type="checkbox" 
+                           formControlName="insurance"
+                           id="insurance">
+                    <label class="form-check-label" for="insurance">
+                      <i class="fas fa-shield-alt"></i> Add Insurance (2% of declared value)
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" 
+                           type="checkbox" 
+                           formControlName="fragile"
+                           id="fragile">
+                    <label class="form-check-label" for="fragile">
+                      <i class="fas fa-exclamation-triangle"></i> Fragile - Handle with Care
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Special Instructions -->
+              <div class="mb-3">
+                <label class="form-label">Special Instructions (Optional)</label>
+                <textarea class="form-control" 
+                          formControlName="specialInstructions" 
+                          rows="2"
+                          [class.is-invalid]="isFieldInvalid('specialInstructions')"
+                          placeholder="Any special handling or delivery instructions"></textarea>
+                <div class="invalid-feedback" *ngIf="isFieldInvalid('specialInstructions')">
+                  {{ getErrorMessage('specialInstructions') }}
+                </div>
+                <small class="text-muted">{{ f['specialInstructions'].value?.length || 0 }}/300 characters</small>
               </div>
             </div>
 
             <div class="form-actions">
-              <button type="button" class="btn btn-secondary" routerLink="/">
+              <button type="button" class="btn btn-secondary" (click)="resetForm()">
+                <i class="fas fa-redo"></i> Reset
+              </button>
+              <button type="button" class="btn btn-outline-secondary" routerLink="/">
                 <i class="fas fa-times"></i> Cancel
               </button>
-              <button type="submit" class="btn btn-primary" [disabled]="shipmentForm.invalid">
+              <button type="submit" class="btn btn-primary">
                 <i class="fas fa-check"></i> Create Shipment
               </button>
             </div>
@@ -137,15 +379,16 @@
       </div>
 
       <div class="col-lg-4">
+        <!-- Estimate Card -->
         <div class="estimate-card">
-          <h3><i class="fas fa-calculator"></i> Estimated Cost</h3>
+          <h3><i class="fas fa-calculator"></i> Cost Estimate</h3>
           <div class="estimate-amount">
             <span class="currency">SLL</span>
             <span class="amount">{{ calculateEstimate() }}</span>
           </div>
           <p class="estimate-note">
             <i class="fas fa-info-circle"></i> 
-            This is an estimate. Final cost will be calculated based on actual weight and dimensions.
+            This is a preliminary estimate. Final cost will be calculated after approval.
           </p>
           <div class="estimate-details">
             <div class="detail-row">
@@ -160,13 +403,51 @@
               <span>Quantity:</span>
               <span>{{ f['quantity'].value || 0 }}</span>
             </div>
+            <div class="detail-row" *ngIf="f['insurance'].value && f['declaredValue'].value">
+              <span>Insurance (2%):</span>
+              <span>{{ (f['declaredValue'].value * 0.02) | number:'1.0-0' }} SLL</span>
+            </div>
           </div>
         </div>
 
+        <!-- Form Status -->
+        <div class="status-card">
+          <h4><i class="fas fa-check-circle"></i> Form Status</h4>
+          <div class="status-item" [class.complete]="!shipmentForm.get('senderName')?.invalid">
+            <i class="fas" [class.fa-check]="!shipmentForm.get('senderName')?.invalid" 
+               [class.fa-circle]="shipmentForm.get('senderName')?.invalid"></i>
+            Sender Information
+          </div>
+          <div class="status-item" [class.complete]="!shipmentForm.get('originCountry')?.invalid">
+            <i class="fas" [class.fa-check]="!shipmentForm.get('originCountry')?.invalid" 
+               [class.fa-circle]="shipmentForm.get('originCountry')?.invalid"></i>
+            Origin Details
+          </div>
+          <div class="status-item" [class.complete]="!shipmentForm.get('recipientName')?.invalid">
+            <i class="fas" [class.fa-check]="!shipmentForm.get('recipientName')?.invalid" 
+               [class.fa-circle]="shipmentForm.get('recipientName')?.invalid"></i>
+            Recipient Information
+          </div>
+          <div class="status-item" [class.complete]="!shipmentForm.get('destinationCountry')?.invalid">
+            <i class="fas" [class.fa-check]="!shipmentForm.get('destinationCountry')?.invalid" 
+               [class.fa-circle]="shipmentForm.get('destinationCountry')?.invalid"></i>
+            Destination Details
+          </div>
+          <div class="status-item" [class.complete]="!shipmentForm.get('weight')?.invalid">
+            <i class="fas" [class.fa-check]="!shipmentForm.get('weight')?.invalid" 
+               [class.fa-circle]="shipmentForm.get('weight')?.invalid"></i>
+            Package Details
+          </div>
+          <div class="form-validity" [class.valid]="shipmentForm.valid" [class.invalid]="shipmentForm.invalid">
+            <strong>{{ shipmentForm.valid ? 'Ready to Submit' : 'Please Complete Required Fields' }}</strong>
+          </div>
+        </div>
+
+        <!-- Help Card -->
         <div class="help-card">
           <h4><i class="fas fa-question-circle"></i> Need Help?</h4>
-          <p>Contact our support team for assistance</p>
-          <button class="btn btn-outline-primary btn-sm">
+          <p>Contact our support team for assistance with your shipment</p>
+          <button class="btn btn-outline-primary btn-sm" type="button">
             <i class="fas fa-phone"></i> Call Support
           </button>
         </div>
