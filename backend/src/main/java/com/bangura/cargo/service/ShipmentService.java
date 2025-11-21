@@ -23,6 +23,8 @@ public interface ShipmentService {
     List<Shipment> getShipmentsByStatus(Shipment.ShipmentStatus status);
 
     Shipment updateShipment(Long shipmentId, Shipment updatedShipment);
+    
+    Shipment updateShipment(Shipment shipment);
 
     void deleteShipment(Long shipmentId);
 }

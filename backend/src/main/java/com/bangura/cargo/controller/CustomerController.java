@@ -105,6 +105,91 @@ public class CustomerController {
         }
     }
     
+    @RequestMapping(value = "/shipments/{id}", method = RequestMethod.GET)
+    public ResponseEntity<?> getShipmentById(Authentication authentication, @PathVariable Long id) {
+        try {
+            String email = authentication.getName();
+            User user = userService.getUserByEmail(email);
+            Shipment shipment = shipmentService.getShipmentById(id);
+            
+            // Ensure customer can only view their own shipments
+            if (!shipment.getUser().getId().equals(user.getId())) {
+                return ResponseEntity.status(403).body("You can only view your own shipments");
+            }
+            
+            return ResponseEntity.ok(shipment);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
+    @RequestMapping(value = "/shipments/{id}", method = RequestMethod.PUT)
+    public ResponseEntity<?> updateShipment(Authentication authentication, 
+                                            @PathVariable Long id,
+                                            @RequestBody Map<String, Object> request) {
+        try {
+            String email = authentication.getName();
+            User user = userService.getUserByEmail(email);
+            Shipment shipment = shipmentService.getShipmentById(id);
+            
+            // Ensure customer can only edit their own shipments
+            if (!shipment.getUser().getId().equals(user.getId())) {
+                return ResponseEntity.status(403).body("You can only edit your own shipments");
+            }
+            
+            // Only allow editing if status is REQUESTED
+            if (shipment.getStatus() != Shipment.ShipmentStatus.REQUESTED) {
+                return ResponseEntity.badRequest().body("Can only edit shipments in REQUESTED status");
+            }
+            
+            // Update shipment fields
+            String origin = request.containsKey("origin") ? 
+                (String) request.get("origin") : 
+                request.get("originCountry") + ", " + request.get("originAddress");
+            String destination = request.containsKey("destination") ? 
+                (String) request.get("destination") : 
+                request.get("destinationCountry") + ", " + request.get("destinationAddress");
+            
+            shipment.setOrigin(origin);
+            shipment.setDestination(destination);
+            shipment.setDescription((String) request.get("description"));
+            shipment.setWeight(Double.valueOf(request.get("weight").toString()));
+            
+            Long productTypeId = Long.valueOf(request.get("productTypeId").toString());
+            ProductType productType = productTypeService.getProductTypeById(productTypeId);
+            shipment.setProductType(productType);
+            
+            Shipment updatedShipment = shipmentService.updateShipment(shipment);
+            return ResponseEntity.ok(updatedShipment);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
+    @RequestMapping(value = "/shipments/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteShipment(Authentication authentication, @PathVariable Long id) {
+        try {
+            String email = authentication.getName();
+            User user = userService.getUserByEmail(email);
+            Shipment shipment = shipmentService.getShipmentById(id);
+            
+            // Ensure customer can only delete their own shipments
+            if (!shipment.getUser().getId().equals(user.getId())) {
+                return ResponseEntity.status(403).body("You can only delete your own shipments");
+            }
+            
+            // Only allow deleting if status is REQUESTED
+            if (shipment.getStatus() != Shipment.ShipmentStatus.REQUESTED) {
+                return ResponseEntity.badRequest().body("Can only delete shipments in REQUESTED status");
+            }
+            
+            shipmentService.deleteShipment(id);
+            return ResponseEntity.ok("Shipment deleted successfully");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
     @RequestMapping(value = "/shipments/track/{trackingNumber}", method = RequestMethod.GET)
     public ResponseEntity<?> trackShipment(@PathVariable String trackingNumber) {
         try {

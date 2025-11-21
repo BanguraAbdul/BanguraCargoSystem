@@ -8,12 +8,14 @@ import com.bangura.cargo.repository.ShipmentRepository;
 import com.bangura.cargo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@Transactional
 public class ShipmentManager implements ShipmentService {
 
     @Autowired
@@ -111,7 +113,16 @@ public class ShipmentManager implements ShipmentService {
     }
 
     @Override
+    public Shipment updateShipment(Shipment shipment) {
+        return shipmentRepository.save(shipment);
+    }
+
+    @Override
     public void deleteShipment(Long shipmentId) {
+        // Simply delete by ID - JPA will handle cascades
+        if (!shipmentRepository.existsById(shipmentId)) {
+            throw new RuntimeException("Shipment not found with id: " + shipmentId);
+        }
         shipmentRepository.deleteById(shipmentId);
     }
 }

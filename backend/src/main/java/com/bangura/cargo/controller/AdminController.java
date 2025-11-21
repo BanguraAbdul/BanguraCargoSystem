@@ -140,9 +140,9 @@ public class AdminController {
     public ResponseEntity<?> deleteShipment(@PathVariable Long shipmentId) {
         try {
             shipmentService.deleteShipment(shipmentId);
-            return ResponseEntity.ok("Shipment deleted successfully");
+            return ResponseEntity.ok().body(java.util.Map.of("message", "Shipment deleted successfully"));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().body(java.util.Map.of("message", e.getMessage()));
         }
     }
 }

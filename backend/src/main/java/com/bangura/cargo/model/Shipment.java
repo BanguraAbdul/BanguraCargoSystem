@@ -59,7 +59,7 @@ public class Shipment {
     
     private LocalDateTime approvalDate;
     
-    @OneToMany(mappedBy = "shipment", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "shipment", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnoreProperties({"shipment", "user"})
     private List<Payment> payments;
     

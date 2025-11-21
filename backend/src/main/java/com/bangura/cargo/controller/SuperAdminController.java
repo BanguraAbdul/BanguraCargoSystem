@@ -22,6 +22,11 @@ public class SuperAdminController {
     @Autowired
     private ProductTypeService productTypeService;
     
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
+    
     @RequestMapping(value = "/users/pending-admins", method = RequestMethod.GET)
     public ResponseEntity<List<User>> getPendingAdmins() {
         return ResponseEntity.ok(userService.getPendingAdmins());
@@ -32,6 +37,23 @@ public class SuperAdminController {
         try {
             User user = userService.approveUser(userId);
             return ResponseEntity.ok(user);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
+    @RequestMapping(value = "/users/{userId}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteUser(@PathVariable Long userId) {
+        try {
+            User user = userService.getUserById(userId);
+            
+            // Prevent deleting super admins
+            if (user.getRole() == User.UserRole.SUPER_ADMIN) {
+                return ResponseEntity.badRequest().body("Cannot delete super admin users");
+            }
+            
+            userService.deleteUser(userId);
+            return ResponseEntity.ok("User deleted successfully");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
