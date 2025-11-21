@@ -1,0 +1,203 @@
+<app-navbar [navLinks]="navLinks"></app-navbar>
+
+<div class="container mt-4">
+      <h2 class="mb-4">
+        <i class="bi bi-person-badge"></i> Admin Dashboard
+      </h2>
+
+      <!-- Stats -->
+      <div class="row mb-4">
+        <div class="col-md-3">
+          <div class="card text-white bg-primary">
+            <div class="card-body">
+              <h5><i class="bi bi-box-seam"></i> Total Shipments</h5>
+                    
+        <h2>{{ shipments.length }}</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-white bg-warning">
+            <div class="card-body">
+              <h5><i class="bi bi-clock"></i> Pending Customers</h5>
+              <h2>{{ pendingCustomers.length }}</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-white bg-info">
+            <div class="card-body">
+              <h5><i class="bi bi-people"></i> Total Customers</h5>
+              <h2>{{ allUsers.length }}</h2>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="card text-white bg-success">
+            <div class="card-body">
+              <h5><i class="bi bi-check-circle"></i> Delivered</h5>
+              <h2>{{ deliveredCount }}</h2>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <ul class="nav nav-tabs mb-3">
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="activeTab === 'customers'" 
+             (click)="activeTab = 'customers'" style="cursor: pointer;">
+            <i class="bi bi-person-check"></i> Pending Customers
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="activeTab === 'shipments'" 
+             (click)="activeTab = 'shipments'" style="cursor: pointer;">
+            <i class="bi bi-box"></i> All Shipments
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="activeTab === 'users'" 
+             (click)="activeTab = 'users'" style="cursor: pointer;">
+            <i class="bi bi-people"></i> All Users
+          </a>
+        </li>
+      </ul>
+
+      <!-- Pending Customers -->
+      <div *ngIf="activeTab === 'customers'" class="card">
+        <div class="card-header bg-warning text-white">
+          <h5 class="mb-0"><i class="bi bi-person-check"></i> Pending Customer Approvals</h5>
+        </div>
+        <div class="card-body">
+          <div *ngIf="pendingCustomers.length === 0" class="alert alert-info">
+            No pending customers
+          </div>
+          <div class="table-responsive" *ngIf="pendingCustomers.length > 0">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Contact</th>
+                  <th>Address</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let user of pendingCustomers">
+                  <td>{{ user.firstName }} {{ user.lastName }}</td>
+                  <td>{{ user.email }}</td>
+                  <td>{{ user.contact }}</td>
+                  <td>{{ user.address }}</td>
+                  <td>
+                    <button class="btn btn-success btn-sm me-2" (click)="approveCustomer(user.id!)">
+                      <i class="bi bi-check"></i> Approve
+                    </button>
+                    <button class="btn btn-danger btn-sm" (click)="deleteUser(user.id!)">
+                      <i class="bi bi-trash"></i> Delete
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shipments -->
+      <div *ngIf="activeTab === 'shipments'" class="card">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0"><i class="bi bi-box-seam"></i> All Shipments</h5>
+        </div>
+        <div class="card-body">
+          <div *ngIf="shipments.length === 0" class="alert alert-info">
+            No shipments yet
+          </div>
+          <div class="table-responsive" *ngIf="shipments.length > 0">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Customer</th>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let shipment of shipments">
+                  <td>#{{ shipment.id }}</td>
+                  <td>{{ shipment.customer?.firstName }} {{ shipment.customer?.lastName }}</td>
+                  <td>{{ shipment.originCountry }}</td>
+                  <td>{{ shipment.destinationCountry }}</td>
+                  <td>
+                    <span class="badge" 
+                          [class.bg-warning]="shipment.status === 'REQUESTED'"
+                          [class.bg-info]="shipment.status === 'APPROVED'"
+                          [class.bg-primary]="shipment.status === 'IN_TRANSIT'"
+                          [class.bg-success]="shipment.status === 'DELIVERED'">
+                      {{ shipment.status }}
+                    </span>
+                  </td>
+                  <td>
+                    <select class="form-select form-select-sm" 
+                            (change)="updateShipmentStatus(shipment.id!, $event)"
+                            [value]="shipment.status">
+                      <option value="REQUESTED">REQUESTED</option>
+                      <option value="APPROVED">APPROVED</option>
+                      <option value="IN_TRANSIT">IN TRANSIT</option>
+                      <option value="DELIVERED">DELIVERED</option>
+                    </select>
+                    <button class="btn btn-danger btn-sm mt-1" 
+                            (click)="deleteShipment(shipment.id!)">
+                      <i class="bi bi-trash"></i> Delete
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- All Users -->
+      <div *ngIf="activeTab === 'users'" class="card">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0"><i class="bi bi-people"></i> All Users</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Contact</th>
+                  <th>Role</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let user of allUsers">
+                  <td>{{ user.firstName }} {{ user.lastName }}</td>
+                  <td>{{ user.email }}</td>
+                  <td>{{ user.contact }}</td>
+                  <td><span class="badge bg-primary">{{ user.role }}</span></td>
+                  <td>
+                    <span class="badge" 
+                          [class.bg-success]="user.status === 'APPROVED'"
+                          [class.bg-warning]="user.status === 'PENDING'">
+                      {{ user.status }}
+                    </span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+
+    </div>

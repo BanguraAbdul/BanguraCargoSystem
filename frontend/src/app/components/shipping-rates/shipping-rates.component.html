@@ -1,0 +1,59 @@
+<div class="rates-page">
+  <div class="container">
+    <div class="page-header">
+      <h1><i class="fas fa-calculator"></i> Shipping Rates & Delivery Times</h1>
+      <p>Calculate shipping costs in Sierra Leone Leones (SLL)</p>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="calculator-card">
+          <h3>Rate Calculator</h3>
+          <div class="mb-3">
+            <label class="form-label">Package Weight (kg)</label>
+            <input type="number" class="form-control" [(ngModel)]="weight" min="0.1" step="0.1">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Destination</label>
+            <select class="form-select" [(ngModel)]="destination">
+              <option *ngFor="let dest of destinations" [value]="dest.value">{{ dest.label }}</option>
+            </select>
+          </div>
+          <button class="btn btn-primary w-100" (click)="calculateRates()">
+            <i class="fas fa-calculator"></i> Calculate Rates
+          </button>
+        </div>
+      </div>
+
+      <div class="col-lg-8">
+        <div class="results-card" *ngIf="calculatedRates.length > 0">
+          <h3>Available Services</h3>
+          <div class="rate-item" *ngFor="let rate of calculatedRates">
+            <div class="rate-header">
+              <h4>{{ rate.service }} Service</h4>
+              <div class="rate-price">
+                <span class="currency">SLL</span>
+                <span class="amount">{{ formatCurrency(rate.cost) }}</span>
+              </div>
+            </div>
+            <div class="rate-details">
+              <span><i class="fas fa-clock"></i> {{ rate.deliveryDays }}</span>
+              <span><i class="fas fa-weight"></i> {{ rate.weight }} kg</span>
+              <span><i class="fas fa-map-marker-alt"></i> {{ rate.destination }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3>Rate Information</h3>
+          <ul>
+            <li><i class="fas fa-check"></i> Rates shown are base rates per kilogram</li>
+            <li><i class="fas fa-check"></i> Additional charges may apply for oversized items</li>
+            <li><i class="fas fa-check"></i> Insurance available for valuable items</li>
+            <li><i class="fas fa-check"></i> Customs fees not included for international shipments</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

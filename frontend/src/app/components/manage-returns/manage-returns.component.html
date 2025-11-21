@@ -1,0 +1,98 @@
+<div class="returns-page">
+  <div class="container">
+    <div class="page-header">
+      <h1><i class="fas fa-undo"></i> Manage a Return</h1>
+      <p>Submit a return request for your shipment</p>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-8 mx-auto">
+        <div class="return-form-card">
+          <form [formGroup]="returnForm" (ngSubmit)="onSubmit()">
+            <div class="mb-3">
+              <label class="form-label">Tracking Number *</label>
+              <input type="text" 
+                     class="form-control" 
+                     formControlName="trackingNumber"
+                     placeholder="Enter tracking number"
+                     [class.is-invalid]="f['trackingNumber'].invalid && f['trackingNumber'].touched">
+              <div class="invalid-feedback" *ngIf="f['trackingNumber'].invalid && f['trackingNumber'].touched">
+                Valid tracking number required
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Return Reason *</label>
+              <select class="form-select" 
+                      formControlName="reason"
+                      [class.is-invalid]="f['reason'].invalid && f['reason'].touched">
+                <option value="">Select reason</option>
+                <option value="damaged">Damaged Item</option>
+                <option value="wrong-item">Wrong Item Received</option>
+                <option value="not-needed">No Longer Needed</option>
+                <option value="quality">Quality Issues</option>
+                <option value="other">Other</option>
+              </select>
+              <div class="invalid-feedback" *ngIf="f['reason'].invalid && f['reason'].touched">
+                Please select a reason
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Description *</label>
+              <textarea class="form-control" 
+                        formControlName="description" 
+                        rows="4"
+                        placeholder="Provide details about the return..."
+                        [class.is-invalid]="f['description'].invalid && f['description'].touched"></textarea>
+              <div class="invalid-feedback" *ngIf="f['description'].invalid && f['description'].touched">
+                Description required (min 10 characters)
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Contact Email *</label>
+                <input type="email" 
+                       class="form-control" 
+                       formControlName="contactEmail"
+                       [class.is-invalid]="f['contactEmail'].invalid && f['contactEmail'].touched">
+                <div class="invalid-feedback" *ngIf="f['contactEmail'].invalid && f['contactEmail'].touched">
+                  Valid email required
+                </div>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Contact Phone *</label>
+                <input type="tel" 
+                       class="form-control" 
+                       formControlName="contactPhone"
+                       placeholder="+23276543210"
+                       [class.is-invalid]="f['contactPhone'].invalid && f['contactPhone'].touched">
+                <div class="invalid-feedback" *ngIf="f['contactPhone'].invalid && f['contactPhone'].touched">
+                  Format: +232XXXXXXXX
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-secondary" routerLink="/">Cancel</button>
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane"></i> Submit Return Request
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div class="info-card mt-4">
+          <h3><i class="fas fa-info-circle"></i> Return Policy</h3>
+          <ul>
+            <li>Returns must be requested within 14 days of delivery</li>
+            <li>Items must be in original condition</li>
+            <li>Return shipping costs may apply</li>
+            <li>Refunds processed within 5-7 business days</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

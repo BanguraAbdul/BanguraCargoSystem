@@ -1,0 +1,52 @@
+.card {
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  border: none;
+  border-radius: 8px;
+}
+
+.card-body h5 {
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.card-body h2 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.nav-tabs .nav-link {
+  color: #495057;
+  border: none;
+  border-bottom: 3px solid transparent;
+}
+
+.nav-tabs .nav-link:hover {
+  border-bottom-color: #dee2e6;
+}
+
+.nav-tabs .nav-link.active {
+  color: #4F46E5;
+  border-bottom-color: #4F46E5;
+  background: none;
+}
+
+.badge {
+  padding: 0.5em 0.75em;
+  font-size: 0.85rem;
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+.form-select-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}

@@ -1,0 +1,73 @@
+<div class="guide-page">
+  <div class="container">
+    <div class="page-header">
+      <h1><i class="fas fa-globe-americas"></i> International Shipping Guide</h1>
+      <p>Everything you need to know about shipping internationally</p>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="guide-card">
+          <h2>Shipping to Popular Destinations</h2>
+          <div class="country-list">
+            <div class="country-item" *ngFor="let country of countries">
+              <div class="country-info">
+                <h4><i class="fas fa-flag"></i> {{ country.name }}</h4>
+                <div class="country-details">
+                  <span><i class="fas fa-clock"></i> {{ country.deliveryDays }} days</span>
+                  <span *ngIf="country.customsRequired">
+                    <i class="fas fa-file-alt"></i> Customs clearance required
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <h2><i class="fas fa-ban"></i> Prohibited Items</h2>
+          <ul class="prohibited-list">
+            <li *ngFor="let item of prohibitedItems">
+              <i class="fas fa-times-circle"></i> {{ item }}
+            </li>
+          </ul>
+        </div>
+
+        <div class="guide-card">
+          <h2><i class="fas fa-file-invoice"></i> Required Documents</h2>
+          <ul class="document-list">
+            <li *ngFor="let doc of requiredDocuments">
+              <i class="fas fa-check-circle"></i> {{ doc }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="sidebar-card">
+          <h3><i class="fas fa-question-circle"></i> Need Assistance?</h3>
+          <p>Our international shipping experts are here to help</p>
+          <button class="btn btn-primary w-100 mb-2">
+            <i class="fas fa-phone"></i> Call Support
+          </button>
+          <button class="btn btn-outline-primary w-100" routerLink="/create-shipment">
+            <i class="fas fa-box"></i> Create Shipment
+          </button>
+        </div>
+
+        <div class="sidebar-card">
+          <h3><i class="fas fa-calculator"></i> Quick Tools</h3>
+          <a routerLink="/rates" class="tool-link">
+            <i class="fas fa-dollar-sign"></i> Calculate Rates
+          </a>
+          <a routerLink="/schedule-pickup" class="tool-link">
+            <i class="fas fa-calendar"></i> Schedule Pickup
+          </a>
+          <a routerLink="/tracking" class="tool-link">
+            <i class="fas fa-search"></i> Track Shipment
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

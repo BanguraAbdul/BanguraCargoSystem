@@ -1,0 +1,100 @@
+.guide-page {
+  background: #f5f5f5;
+  min-height: 100vh;
+  padding: 40px 0;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.page-header h1 {
+  color: #4d148c;
+  font-size: 2.5rem;
+}
+
+.guide-card, .sidebar-card {
+  background: white;
+  border-radius: 8px;
+  padding: 25px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.guide-card h2 {
+  color: #4d148c;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}
+
+.country-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.country-info h4 {
+  color: #4d148c;
+  margin-bottom: 10px;
+}
+
+.country-details {
+  display: flex;
+  gap: 20px;
+  color: #666;
+}
+
+.country-details i {
+  color: #ff6200;
+  margin-right: 5px;
+}
+
+.prohibited-list, .document-list {
+  list-style: none;
+  padding: 0;
+}
+
+.prohibited-list li, .document-list li {
+  padding: 10px 0;
+  color: #333;
+}
+
+.prohibited-list i {
+  color: #dc3545;
+  margin-right: 10px;
+}
+
+.document-list i {
+  color: #28a745;
+  margin-right: 10px;
+}
+
+.sidebar-card h3 {
+  color: #4d148c;
+  margin-bottom: 15px;
+  font-size: 1.2rem;
+}
+
+.tool-link {
+  display: block;
+  padding: 12px;
+  color: #333;
+  text-decoration: none;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  transition: all 0.3s;
+}
+
+.tool-link:hover {
+  background: #f8f9fa;
+  border-color: #ff6200;
+  color: #ff6200;
+}
+
+.tool-link i {
+  margin-right: 10px;
+  color: #ff6200;
+}
