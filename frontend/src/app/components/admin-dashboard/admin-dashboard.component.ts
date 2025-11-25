@@ -18,6 +18,7 @@ import { Shipment } from '../../models/shipment.model';
 
     export class AdminDashboardComponent implements OnInit {
   navLinks = [
+    { path: '/', label: 'Home', icon: 'bi bi-house-door' },
     { path: '/admin', label: 'Dashboard', icon: 'bi bi-speedometer2' }
   ];
 
@@ -84,6 +85,25 @@ import { Shipment } from '../../models/shipment.model';
     });
   }
 
+  approveShipment(shipmentId: number) {
+    this.alertService.confirm('This will approve the shipment.', 'Approve Shipment?').then((result) => {
+      if (result.isConfirmed) {
+        this.alertService.loading('Approving shipment...');
+        this.shipmentService.approveShipment(shipmentId).subscribe({
+          next: () => {
+            this.alertService.close();
+            this.alertService.success('Shipment approved successfully!');
+            this.loadData();
+          },
+          error: () => {
+            this.alertService.close();
+            this.alertService.error('Failed to approve shipment');
+          }
+        });
+      }
+    });
+  }
+
   updateShipmentStatus(shipmentId: number, event: any) {
     const status = event.target.value;
     this.alertService.loading('Updating shipment status...');
@@ -110,9 +130,28 @@ import { Shipment } from '../../models/shipment.model';
             this.alertService.success('Shipment deleted successfully!');
             this.loadData();
           },
-          error: () => {
+          error: (err) => {
             this.alertService.close();
-            this.alertService.error('Failed to delete shipment');
+            console.error('Full delete error:', err);
+            console.error('Error status:', err.status);
+            console.error('Error error:', err.error);
+            
+            // Check if it's actually a success (status 200) but Angular thinks it's an error
+            if (err.status === 200 || err.status === 0) {
+              this.alertService.success('Shipment deleted successfully!');
+              this.loadData();
+              return;
+            }
+            
+            // Extract error message
+            let errorMessage = 'Failed to delete shipment';
+            if (err.error && err.error.message) {
+              errorMessage = err.error.message;
+            } else if (err.message) {
+              errorMessage = err.message;
+            }
+            
+            this.alertService.error(errorMessage);
           }
         });
       }

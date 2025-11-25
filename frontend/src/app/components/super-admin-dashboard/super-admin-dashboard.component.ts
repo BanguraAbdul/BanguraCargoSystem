@@ -110,12 +110,14 @@ import { User } from '../../models/user.model';
                     <td><span class="badge bg-warning">{{ user.status }}</span></td>
                     <td>
                       <button class="btn btn-success btn-sm me-2" 
-                              (click)="approveAdmin(user.id!)">
-                        <i class="bi bi-check-circle"></i> Approve
+                              (click)="approveAdmin(user.id!)"
+                              title="Approve admin">
+                        <i class="bi bi-check-circle"></i>
                       </button>
                       <button class="btn btn-danger btn-sm" 
-                              (click)="deleteUser(user.id!)">
-                        <i class="bi bi-trash"></i> Delete
+                              (click)="deleteUser(user.id!)"
+                              title="Delete admin">
+                        <i class="bi bi-trash"></i>
                       </button>
                     </td>
                   </tr>
@@ -159,12 +161,14 @@ import { User } from '../../models/user.model';
                     <td><span class="badge bg-warning">{{ user.status }}</span></td>
                     <td>
                       <button class="btn btn-success btn-sm me-2" 
-                              (click)="approveCustomer(user.id!)">
-                        <i class="bi bi-check-circle"></i> Approve
+                              (click)="approveCustomer(user.id!)"
+                              title="Approve customer">
+                        <i class="bi bi-check-circle"></i>
                       </button>
                       <button class="btn btn-danger btn-sm" 
-                              (click)="deleteUser(user.id!)">
-                        <i class="bi bi-trash"></i> Delete
+                              (click)="deleteUser(user.id!)"
+                              title="Delete customer">
+                        <i class="bi bi-trash"></i>
                       </button>
                     </td>
                   </tr>
@@ -213,8 +217,9 @@ import { User } from '../../models/user.model';
                     <td>
                       <button class="btn btn-danger btn-sm" 
                               (click)="deleteUser(user.id!)"
-                              *ngIf="user.role !== 'SUPER_ADMIN'">
-                        <i class="bi bi-trash"></i> Delete
+                              *ngIf="user.role !== 'SUPER_ADMIN'"
+                              title="Delete user">
+                        <i class="bi bi-trash"></i>
                       </button>
                     </td>
                   </tr>
@@ -240,6 +245,7 @@ import { User } from '../../models/user.model';
 })
 export class SuperAdminDashboardComponent implements OnInit {
   navLinks = [
+    { path: '/', label: 'Home', icon: 'bi bi-house-door' },
     { path: '/super-admin', label: 'Dashboard', icon: 'bi bi-speedometer2' }
   ];
 
@@ -264,7 +270,7 @@ export class SuperAdminDashboardComponent implements OnInit {
   loadData() {
     this.userService.getPendingAdmins().subscribe(users => this.pendingAdmins = users);
     this.userService.getPendingCustomers().subscribe(users => this.pendingCustomers = users);
-    this.userService.getAllUsers().subscribe(users => this.allUsers = users);
+    this.userService.getAllUsersSuperAdmin().subscribe(users => this.allUsers = users);
   }
 
   approveAdmin(userId: number) {
@@ -309,15 +315,15 @@ export class SuperAdminDashboardComponent implements OnInit {
     this.alertService.confirm('This action cannot be undone!', 'Delete User?').then((result) => {
       if (result.isConfirmed) {
         this.alertService.loading('Deleting user...');
-        this.userService.deleteUser(userId).subscribe({
+        this.userService.deleteSuperAdminUser(userId).subscribe({
           next: () => {
             this.alertService.close();
             this.alertService.success('User deleted successfully!');
             this.loadData();
           },
-          error: () => {
+          error: (err) => {
             this.alertService.close();
-            this.alertService.error('Failed to delete user');
+            this.alertService.error(err.error?.message || 'Failed to delete user');
           }
         });
       }

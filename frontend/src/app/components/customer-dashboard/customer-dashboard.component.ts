@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { ShipmentService } from '../../services/shipment.service';
 import { AlertService } from '../../services/alert.service';
@@ -9,7 +10,7 @@ import { Shipment } from '../../models/shipment.model';
 @Component({
   selector: 'app-customer-dashboard',
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarComponent],
+  imports: [CommonModule, FormsModule, NavbarComponent, RouterModule],
   template: `
     <app-navbar [navLinks]="navLinks"></app-navbar>
     
@@ -54,24 +55,15 @@ import { Shipment } from '../../models/shipment.model';
         </div>
       </div>
 
-      <!-- Tabs -->
-      <ul class="nav nav-tabs mb-3">
-        <li class="nav-item">
-          <a class="nav-link" [class.active]="activeTab === 'shipments'" 
-             (click)="activeTab = 'shipments'" style="cursor: pointer;">
-            <i class="bi bi-box"></i> My Shipments
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" [class.active]="activeTab === 'create'" 
-             (click)="activeTab = 'create'" style="cursor: pointer;">
-            <i class="bi bi-plus-circle"></i> Create Shipment
-          </a>
-        </li>
-      </ul>
+      <!-- Action Buttons -->
+      <div class="mb-4">
+        <button class="btn btn-success btn-lg" routerLink="/create-shipment">
+          <i class="bi bi-plus-circle"></i> Create New Shipment
+        </button>
+      </div>
 
       <!-- My Shipments -->
-      <div *ngIf="activeTab === 'shipments'" class="card">
+      <div class="card">
         <div class="card-header bg-primary text-white">
           <h5 class="mb-0"><i class="bi bi-box-seam"></i> My Shipments</h5>
         </div>
@@ -90,13 +82,14 @@ import { Shipment } from '../../models/shipment.model';
                   <th>Weight (kg)</th>
                   <th>Status</th>
                   <th>Created</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 <tr *ngFor="let shipment of shipments">
                   <td><strong>#{{ shipment.id }}</strong></td>
-                  <td>{{ shipment.originCountry }}</td>
-                  <td>{{ shipment.destinationCountry }}</td>
+                  <td>{{ shipment.origin }}</td>
+                  <td>{{ shipment.destination }}</td>
                   <td>{{ shipment.productType?.name }}</td>
                   <td>{{ shipment.weight }}</td>
                   <td>
@@ -108,7 +101,21 @@ import { Shipment } from '../../models/shipment.model';
                       {{ shipment.status }}
                     </span>
                   </td>
-                  <td>{{ shipment.createdAt | date:'short' }}</td>
+                  <td>{{ shipment.requestDate | date:'short' }}</td>
+                  <td>
+                    <button class="btn btn-primary btn-sm me-1" 
+                            (click)="editShipment(shipment.id!)"
+                            [disabled]="shipment.status !== 'REQUESTED'"
+                            [title]="shipment.status !== 'REQUESTED' ? 'Can only edit shipments in REQUESTED status' : 'Edit shipment'">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-danger btn-sm" 
+                            (click)="deleteShipment(shipment.id!)"
+                            [disabled]="shipment.status !== 'REQUESTED'"
+                            [title]="shipment.status !== 'REQUESTED' ? 'Can only delete shipments in REQUESTED status' : 'Delete shipment'">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -116,96 +123,16 @@ import { Shipment } from '../../models/shipment.model';
         </div>
       </div>
 
-      <!-- Create Shipment -->
-      <div *ngIf="activeTab === 'create'" class="card">
-        <div class="card-header bg-success text-white">
-          <h5 class="mb-0"><i class="bi bi-plus-circle"></i> Create New Shipment</h5>
-        </div>
-        <div class="card-body">
-          <form (ngSubmit)="createShipment()">
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Origin Country</label>
-                <input type="text" class="form-control" 
-                       [(ngModel)]="newShipment.originCountry" 
-                       name="originCountry" required>
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Destination Country</label>
-                <input type="text" class="form-control" 
-                       [(ngModel)]="newShipment.destinationCountry" 
-                       name="destinationCountry" required>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Origin Address</label>
-                <textarea class="form-control" 
-                          [(ngModel)]="newShipment.originAddress" 
-                          name="originAddress" required></textarea>
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Destination Address</label>
-                <textarea class="form-control" 
-                          [(ngModel)]="newShipment.destinationAddress" 
-                          name="destinationAddress" required></textarea>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-4 mb-3">
-                <label class="form-label">Product Type ID</label>
-                <input type="number" class="form-control" 
-                       [(ngModel)]="newShipment.productTypeId" 
-                       name="productTypeId" required>
-                <small class="text-muted">1=Electronics, 2=Documents, 3=Clothing, 4=Food</small>
-              </div>
-              <div class="col-md-4 mb-3">
-                <label class="form-label">Weight (kg)</label>
-                <input type="number" class="form-control" 
-                       [(ngModel)]="newShipment.weight" 
-                       name="weight" step="0.1" required>
-              </div>
-              <div class="col-md-4 mb-3">
-                <label class="form-label">Quantity</label>
-                <input type="number" class="form-control" 
-                       [(ngModel)]="newShipment.quantity" 
-                       name="quantity" required>
-              </div>
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Description</label>
-              <textarea class="form-control" 
-                        [(ngModel)]="newShipment.description" 
-                        name="description" rows="3"></textarea>
-            </div>
-            <button type="submit" class="btn btn-success">
-              <i class="bi bi-plus-circle"></i> Create Shipment
-            </button>
-          </form>
-        </div>
-      </div>
-
-
     </div>
   `
 })
 export class CustomerDashboardComponent implements OnInit {
   navLinks = [
+    { path: '/', label: 'Home', icon: 'bi bi-house-door' },
     { path: '/customer', label: 'Dashboard', icon: 'bi bi-speedometer2' }
   ];
 
-  activeTab = 'shipments';
   shipments: Shipment[] = [];
-  newShipment: any = {
-    originCountry: '',
-    destinationCountry: '',
-    originAddress: '',
-    destinationAddress: '',
-    productTypeId: 1,
-    weight: 0,
-    quantity: 1,
-    description: ''
-  };
 
   get pendingCount(): number {
     return this.shipments.filter(s => s.status === 'REQUESTED').length;
@@ -221,7 +148,8 @@ export class CustomerDashboardComponent implements OnInit {
 
   constructor(
     private shipmentService: ShipmentService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -235,35 +163,27 @@ export class CustomerDashboardComponent implements OnInit {
     });
   }
 
-  createShipment() {
-    this.alertService.loading('Creating shipment...');
-    this.shipmentService.createShipment(this.newShipment).subscribe({
-      next: () => {
-        this.alertService.close();
-        this.alertService.success('Your shipment has been created and is pending approval!', 'Shipment Created!').then(() => {
-          this.activeTab = 'shipments';
-          this.loadShipments();
-          this.resetForm();
-        });
-      },
-      error: (err) => {
-        this.alertService.close();
-        const errorMessage = err.error?.message || 'Failed to create shipment';
-        this.alertService.error(errorMessage);
-      }
-    });
+  editShipment(shipmentId: number) {
+    // Navigate to edit page (we'll create this)
+    this.router.navigate(['/edit-shipment', shipmentId]);
   }
 
-  resetForm() {
-    this.newShipment = {
-      originCountry: '',
-      destinationCountry: '',
-      originAddress: '',
-      destinationAddress: '',
-      productTypeId: 1,
-      weight: 0,
-      quantity: 1,
-      description: ''
-    };
+  deleteShipment(shipmentId: number) {
+    this.alertService.confirm('This action cannot be undone!', 'Delete Shipment?').then((result) => {
+      if (result.isConfirmed) {
+        this.alertService.loading('Deleting shipment...');
+        this.shipmentService.deleteCustomerShipment(shipmentId).subscribe({
+          next: () => {
+            this.alertService.close();
+            this.alertService.success('Shipment deleted successfully!');
+            this.loadShipments();
+          },
+          error: (err) => {
+            this.alertService.close();
+            this.alertService.error(err.error?.message || 'Failed to delete shipment');
+          }
+        });
+      }
+    });
   }
 }

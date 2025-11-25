@@ -20,6 +20,11 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
   { 
+    path: 'edit-shipment/:id', 
+    loadComponent: () => import('./components/edit-shipment/edit-shipment.component').then(m => m.EditShipmentComponent),
+    canActivate: [authGuard]
+  },
+  { 
     path: 'rates', 
     loadComponent: () => import('./components/shipping-rates/shipping-rates.component').then(m => m.ShippingRatesComponent)
   },

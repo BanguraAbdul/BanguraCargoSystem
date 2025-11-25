@@ -91,11 +91,15 @@
                   <td>{{ user.contact }}</td>
                   <td>{{ user.address }}</td>
                   <td>
-                    <button class="btn btn-success btn-sm me-2" (click)="approveCustomer(user.id!)">
-                      <i class="bi bi-check"></i> Approve
+                    <button class="btn btn-success btn-sm me-2" 
+                            (click)="approveCustomer(user.id!)"
+                            title="Approve customer">
+                      <i class="bi bi-check-circle"></i>
                     </button>
-                    <button class="btn btn-danger btn-sm" (click)="deleteUser(user.id!)">
-                      <i class="bi bi-trash"></i> Delete
+                    <button class="btn btn-danger btn-sm" 
+                            (click)="deleteUser(user.id!)"
+                            title="Delete customer">
+                      <i class="bi bi-trash"></i>
                     </button>
                   </td>
                 </tr>
@@ -129,9 +133,9 @@
               <tbody>
                 <tr *ngFor="let shipment of shipments">
                   <td>#{{ shipment.id }}</td>
-                  <td>{{ shipment.customer?.firstName }} {{ shipment.customer?.lastName }}</td>
-                  <td>{{ shipment.originCountry }}</td>
-                  <td>{{ shipment.destinationCountry }}</td>
+                  <td>{{ shipment.user?.firstName }} {{ shipment.user?.lastName }}</td>
+                  <td>{{ shipment.origin }}</td>
+                  <td>{{ shipment.destination }}</td>
                   <td>
                     <span class="badge" 
                           [class.bg-warning]="shipment.status === 'REQUESTED'"
@@ -142,7 +146,12 @@
                     </span>
                   </td>
                   <td>
-                    <select class="form-select form-select-sm" 
+                    <button class="btn btn-success btn-sm me-1" 
+                            (click)="approveShipment(shipment.id!)"
+                            *ngIf="shipment.status === 'REQUESTED'">
+                      <i class="bi bi-check-circle"></i> Approve
+                    </button>
+                    <select class="form-select form-select-sm mb-1" 
                             (change)="updateShipmentStatus(shipment.id!, $event)"
                             [value]="shipment.status">
                       <option value="REQUESTED">REQUESTED</option>
@@ -150,9 +159,10 @@
                       <option value="IN_TRANSIT">IN TRANSIT</option>
                       <option value="DELIVERED">DELIVERED</option>
                     </select>
-                    <button class="btn btn-danger btn-sm mt-1" 
-                            (click)="deleteShipment(shipment.id!)">
-                      <i class="bi bi-trash"></i> Delete
+                    <button class="btn btn-danger btn-sm" 
+                            (click)="deleteShipment(shipment.id!)"
+                            title="Delete shipment">
+                      <i class="bi bi-trash"></i>
                     </button>
                   </td>
                 </tr>

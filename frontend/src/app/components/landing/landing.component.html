@@ -249,4 +249,197 @@
       </div>
     </div>
   </footer>
+
+  <!-- Login Modal -->
+  <div class="modal-overlay" *ngIf="showLoginModal" (click)="closeLoginModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="closeLoginModal()">
+        <i class="fas fa-times"></i>
+      </button>
+      
+      <div class="login-modal-header">
+        <div class="logo-container">
+          <i class="fas fa-shipping-fast logo-icon"></i>
+        </div>
+        <h2 class="text-center mb-2">Bangura Cargo System</h2>
+        <p class="text-center" style="color: #666">Sign in to your account</p>
+      </div>
+      
+      <div class="login-modal-body">
+        <form #loginForm="ngForm" (ngSubmit)="onLoginSubmit()">
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="fas fa-user-shield"></i> Login As
+            </label>
+            <select class="form-select form-select-lg" 
+                    [(ngModel)]="selectedRole" 
+                    name="role">
+              <option value="SUPER_ADMIN">Super Admin</option>
+              <option value="ADMIN">Admin</option>
+              <option value="CUSTOMER">Customer</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="fas fa-envelope"></i> Email Address
+            </label>
+            <input type="email" 
+                   class="form-control form-control-lg" 
+                   [(ngModel)]="credentials.email" 
+                   name="email" 
+                   placeholder="Enter your email">
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label">
+              <i class="fas fa-lock"></i> Password
+            </label>
+            <input type="password" 
+                   class="form-control form-control-lg" 
+                   [(ngModel)]="credentials.password" 
+                   name="password" 
+                   placeholder="Enter your password">
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+            <i class="fas fa-sign-in-alt"></i> Sign In
+          </button>
+
+          <div class="text-center">
+            <p class="mb-0">Don't have an account? 
+              <a (click)="closeLoginModal(); openRegisterModal()" class="text-primary fw-bold" style="cursor: pointer;">Register here</a>
+            </p>
+          </div>
+        </form>
+
+        <div class="demo-credentials mt-4">
+          <p class="text-muted small mb-2"><i class="fas fa-info-circle"></i> NOTE:</p>
+          <div class="credential-box">
+            <strong>Be sure you choose your login level</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Register Modal -->
+  <div class="modal-overlay" *ngIf="showRegisterModal" (click)="closeRegisterModal()">
+    <div class="modal-content modal-content-large" (click)="$event.stopPropagation()">
+      <button class="modal-close" (click)="closeRegisterModal()">
+        <i class="fas fa-times"></i>
+      </button>
+      
+      <div class="register-modal-header">
+        <div class="logo-container">
+          <i class="fas fa-user-plus logo-icon"></i>
+        </div>
+        <h2 class="text-center mb-2">Create Your Account</h2>
+        <p class="text-center" style="color: #666">Join Bangura Cargo System today</p>
+      </div>
+      
+      <div class="register-modal-body">
+        <form #registerForm="ngForm" (ngSubmit)="onRegisterSubmit()">
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="fas fa-user-tag"></i> Register As
+            </label>
+            <select class="form-select form-select-lg" 
+                    [(ngModel)]="registerData.role" 
+                    name="role">
+              <option value="CUSTOMER">Customer</option>
+              <option value="ADMIN">Admin</option>
+            </select>
+            <small class="text-muted">Select Admin if you want administrative privileges</small>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">
+                <i class="fas fa-user"></i> First Name
+              </label>
+              <input type="text" 
+                     class="form-control form-control-lg" 
+                     [(ngModel)]="registerData.firstName" 
+                     name="firstName" 
+                     placeholder="Enter first name">
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label class="form-label">
+                <i class="fas fa-user"></i> Last Name
+              </label>
+              <input type="text" 
+                     class="form-control form-control-lg" 
+                     [(ngModel)]="registerData.lastName" 
+                     name="lastName" 
+                     placeholder="Enter last name">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="fas fa-envelope"></i> Email Address
+            </label>
+            <input type="email" 
+                   class="form-control form-control-lg" 
+                   [(ngModel)]="registerData.email" 
+                   name="email" 
+                   placeholder="Enter your email">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="fas fa-phone"></i> Contact Number
+            </label>
+            <input type="text" 
+                   class="form-control form-control-lg" 
+                   [(ngModel)]="registerData.contact" 
+                   name="contact" 
+                   placeholder="+23276111111">
+            <small class="text-muted">Format: +232 followed by 8 digits (e.g., +23276111111)</small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="fas fa-map-marker-alt"></i> Address
+            </label>
+            <textarea class="form-control" 
+                      rows="3"
+                      [(ngModel)]="registerData.address" 
+                      name="address" 
+                      placeholder="Enter your full address"></textarea>
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label">
+              <i class="fas fa-lock"></i> Password
+            </label>
+            <input type="password" 
+                   class="form-control form-control-lg" 
+                   [(ngModel)]="registerData.password" 
+                   name="password" 
+                   placeholder="Create a strong password">
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+            <i class="fas fa-user-plus"></i> Create Account
+          </button>
+
+          <div class="text-center">
+            <p class="mb-0">Already have an account? 
+              <a (click)="closeRegisterModal(); openLoginModal()" class="text-primary fw-bold" style="cursor: pointer;">Login here</a>
+            </p>
+          </div>
+        </form>
+
+        <div class="demo-credentials mt-4">
+          <p class="text-muted small mb-2"><i class="fas fa-info-circle"></i> NOTE:</p>
+          <div class="credential-box">
+            <strong>Your account will be pending approval after registration</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
