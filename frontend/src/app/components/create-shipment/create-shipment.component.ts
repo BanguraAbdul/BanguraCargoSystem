@@ -124,16 +124,46 @@ export class CreateShipmentComponent implements OnInit {
       return;
     }
 
-    // Prepare data for backend
+    // Prepare data for backend - send ALL fields
     const formData = {
+      // Sender Information
+      senderName: this.shipmentForm.value.senderName,
+      senderPhone: this.shipmentForm.value.senderPhone,
+      senderEmail: this.shipmentForm.value.senderEmail,
+      
+      // Origin Information
       originCountry: this.shipmentForm.value.originCountry,
+      originCity: this.shipmentForm.value.originCity,
+      originAddress: this.shipmentForm.value.originAddress,
+      originPostalCode: this.shipmentForm.value.originPostalCode,
+      
+      // Recipient Information
+      recipientName: this.shipmentForm.value.recipientName,
+      recipientPhone: this.shipmentForm.value.recipientPhone,
+      recipientEmail: this.shipmentForm.value.recipientEmail,
+      
+      // Destination Information
       destinationCountry: this.shipmentForm.value.destinationCountry,
-      originAddress: `${this.shipmentForm.value.originAddress}, ${this.shipmentForm.value.originCity}, ${this.shipmentForm.value.originCountry}`,
-      destinationAddress: `${this.shipmentForm.value.destinationAddress}, ${this.shipmentForm.value.destinationCity}, ${this.shipmentForm.value.destinationCountry}`,
+      destinationCity: this.shipmentForm.value.destinationCity,
+      destinationAddress: this.shipmentForm.value.destinationAddress,
+      destinationPostalCode: this.shipmentForm.value.destinationPostalCode,
+      
+      // Package Details
       productTypeId: this.shipmentForm.value.productTypeId,
       weight: this.shipmentForm.value.weight,
       quantity: this.shipmentForm.value.quantity,
-      description: this.shipmentForm.value.description
+      description: this.shipmentForm.value.description,
+      
+      // Dimensions
+      length: this.shipmentForm.value.length,
+      width: this.shipmentForm.value.width,
+      height: this.shipmentForm.value.height,
+      
+      // Additional Information
+      declaredValue: this.shipmentForm.value.declaredValue,
+      insurance: this.shipmentForm.value.insurance,
+      fragile: this.shipmentForm.value.fragile,
+      specialInstructions: this.shipmentForm.value.specialInstructions
     };
 
     this.alertService.loading('Creating shipment...');
@@ -141,7 +171,12 @@ export class CreateShipmentComponent implements OnInit {
       next: () => {
         this.alertService.close();
         this.alertService.success('Your shipment has been created successfully and is pending approval!', 'Success').then(() => {
-          this.router.navigate(['/customer']);
+          // Send message to parent window if in iframe
+          if (window.parent !== window) {
+            window.parent.postMessage('shipment-created', '*');
+          } else {
+            this.router.navigate(['/customer']);
+          }
         });
       },
       error: (err) => {

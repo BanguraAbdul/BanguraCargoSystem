@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { UserService } from '../../services/user.service';
 import { AlertService } from '../../services/alert.service';
@@ -8,7 +9,7 @@ import { User } from '../../models/user.model';
 @Component({
   selector: 'app-super-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, NavbarComponent],
+  imports: [CommonModule, FormsModule, NavbarComponent],
   template: `
     <app-navbar [navLinks]="navLinks"></app-navbar>
     
@@ -86,10 +87,20 @@ import { User } from '../../models/user.model';
             </h5>
           </div>
           <div class="card-body">
+            <div class="mb-3" *ngIf="pendingAdmins.length > 0">
+              <input type="text" 
+                     class="form-control" 
+                     [(ngModel)]="searchTermAdmins" 
+                     (ngModelChange)="filterPendingAdmins()"
+                     placeholder="🔍 Search by name, email, contact, or role...">
+            </div>
             <div *ngIf="pendingAdmins.length === 0" class="alert alert-info">
               <i class="bi bi-info-circle"></i> No pending admin approvals
             </div>
-            <div class="table-responsive" *ngIf="pendingAdmins.length > 0">
+            <div *ngIf="filteredPendingAdmins.length === 0 && pendingAdmins.length > 0" class="alert alert-warning">
+              <i class="bi bi-search"></i> No admins match your search.
+            </div>
+            <div class="table-responsive" *ngIf="filteredPendingAdmins.length > 0">
               <table class="table table-hover">
                 <thead>
                   <tr>
@@ -102,7 +113,7 @@ import { User } from '../../models/user.model';
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let user of pendingAdmins">
+                  <tr *ngFor="let user of filteredPendingAdmins">
                     <td>{{ user.firstName }} {{ user.lastName }}</td>
                     <td>{{ user.email }}</td>
                     <td>{{ user.contact }}</td>
@@ -137,10 +148,20 @@ import { User } from '../../models/user.model';
             </h5>
           </div>
           <div class="card-body">
+            <div class="mb-3" *ngIf="pendingCustomers.length > 0">
+              <input type="text" 
+                     class="form-control" 
+                     [(ngModel)]="searchTermCustomers" 
+                     (ngModelChange)="filterPendingCustomers()"
+                     placeholder="🔍 Search by name, email, or contact...">
+            </div>
             <div *ngIf="pendingCustomers.length === 0" class="alert alert-info">
               <i class="bi bi-info-circle"></i> No pending customer approvals
             </div>
-            <div class="table-responsive" *ngIf="pendingCustomers.length > 0">
+            <div *ngIf="filteredPendingCustomers.length === 0 && pendingCustomers.length > 0" class="alert alert-warning">
+              <i class="bi bi-search"></i> No customers match your search.
+            </div>
+            <div class="table-responsive" *ngIf="filteredPendingCustomers.length > 0">
               <table class="table table-hover">
                 <thead>
                   <tr>
@@ -153,7 +174,7 @@ import { User } from '../../models/user.model';
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let user of pendingCustomers">
+                  <tr *ngFor="let user of filteredPendingCustomers">
                     <td>{{ user.firstName }} {{ user.lastName }}</td>
                     <td>{{ user.email }}</td>
                     <td>{{ user.contact }}</td>
@@ -188,6 +209,16 @@ import { User } from '../../models/user.model';
             </h5>
           </div>
           <div class="card-body">
+            <div class="mb-3" *ngIf="allUsers.length > 0">
+              <input type="text" 
+                     class="form-control" 
+                     [(ngModel)]="searchTermAllUsers" 
+                     (ngModelChange)="filterAllUsers()"
+                     placeholder="🔍 Search by name, email, contact, or role...">
+            </div>
+            <div *ngIf="filteredAllUsers.length === 0 && allUsers.length > 0" class="alert alert-warning">
+              <i class="bi bi-search"></i> No users match your search.
+            </div>
             <div class="table-responsive">
               <table class="table table-hover">
                 <thead>
@@ -201,7 +232,7 @@ import { User } from '../../models/user.model';
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let user of allUsers">
+                  <tr *ngFor="let user of filteredAllUsers">
                     <td>{{ user.firstName }} {{ user.lastName }}</td>
                     <td>{{ user.email }}</td>
                     <td>{{ user.contact }}</td>
@@ -251,8 +282,14 @@ export class SuperAdminDashboardComponent implements OnInit {
 
   activeTab = 'pending';
   pendingAdmins: User[] = [];
+  filteredPendingAdmins: User[] = [];
   pendingCustomers: User[] = [];
+  filteredPendingCustomers: User[] = [];
   allUsers: User[] = [];
+  filteredAllUsers: User[] = [];
+  searchTermAdmins: string = '';
+  searchTermCustomers: string = '';
+  searchTermAllUsers: string = '';
 
   get approvedCount(): number {
     return this.allUsers.filter(u => u.status === 'APPROVED').length;
@@ -268,9 +305,50 @@ export class SuperAdminDashboardComponent implements OnInit {
   }
 
   loadData() {
-    this.userService.getPendingAdmins().subscribe(users => this.pendingAdmins = users);
-    this.userService.getPendingCustomers().subscribe(users => this.pendingCustomers = users);
-    this.userService.getAllUsersSuperAdmin().subscribe(users => this.allUsers = users);
+    this.userService.getPendingAdmins().subscribe(users => {
+      this.pendingAdmins = users;
+      this.filteredPendingAdmins = users;
+    });
+    this.userService.getPendingCustomers().subscribe(users => {
+      this.pendingCustomers = users;
+      this.filteredPendingCustomers = users;
+    });
+    this.userService.getAllUsersSuperAdmin().subscribe(users => {
+      this.allUsers = users;
+      this.filteredAllUsers = users;
+    });
+  }
+
+  filterPendingAdmins() {
+    const term = this.searchTermAdmins.toLowerCase();
+    this.filteredPendingAdmins = this.pendingAdmins.filter(user =>
+      user.firstName?.toLowerCase().includes(term) ||
+      user.lastName?.toLowerCase().includes(term) ||
+      user.email?.toLowerCase().includes(term) ||
+      user.contact?.includes(term) ||
+      user.role?.toLowerCase().includes(term)
+    );
+  }
+
+  filterPendingCustomers() {
+    const term = this.searchTermCustomers.toLowerCase();
+    this.filteredPendingCustomers = this.pendingCustomers.filter(user =>
+      user.firstName?.toLowerCase().includes(term) ||
+      user.lastName?.toLowerCase().includes(term) ||
+      user.email?.toLowerCase().includes(term) ||
+      user.contact?.includes(term)
+    );
+  }
+
+  filterAllUsers() {
+    const term = this.searchTermAllUsers.toLowerCase();
+    this.filteredAllUsers = this.allUsers.filter(user =>
+      user.firstName?.toLowerCase().includes(term) ||
+      user.lastName?.toLowerCase().includes(term) ||
+      user.email?.toLowerCase().includes(term) ||
+      user.contact?.includes(term) ||
+      user.role?.toLowerCase().includes(term)
+    );
   }
 
   approveAdmin(userId: number) {
@@ -316,14 +394,29 @@ export class SuperAdminDashboardComponent implements OnInit {
       if (result.isConfirmed) {
         this.alertService.loading('Deleting user...');
         this.userService.deleteSuperAdminUser(userId).subscribe({
-          next: () => {
+          next: (response) => {
+            console.log('Delete response:', response);
             this.alertService.close();
             this.alertService.success('User deleted successfully!');
             this.loadData();
           },
           error: (err) => {
+            console.error('Delete error:', err);
             this.alertService.close();
-            this.alertService.error(err.error?.message || 'Failed to delete user');
+            
+            // Check if it's actually a success (status 200) but with text response
+            if (err.status === 200 || err.status === 0) {
+              this.alertService.success('User deleted successfully!');
+              this.loadData();
+            } else {
+              let errorMessage = 'Failed to delete user';
+              if (typeof err.error === 'string') {
+                errorMessage = err.error;
+              } else if (err.error?.message) {
+                errorMessage = err.error.message;
+              }
+              this.alertService.error(errorMessage);
+            }
           }
         });
       }

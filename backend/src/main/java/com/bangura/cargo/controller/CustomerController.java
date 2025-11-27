@@ -62,33 +62,109 @@ public class CustomerController {
         return ResponseEntity.ok(productTypeService.getAllProductTypes());
     }
     
+    @RequestMapping(value = "/shipments/test", method = RequestMethod.POST)
+    public ResponseEntity<?> testEndpoint(@RequestBody(required = false) String body) {
+        System.out.println("🔵 TEST ENDPOINT REACHED!");
+        System.out.println("📦 Body: " + body);
+        return ResponseEntity.ok("Test successful! Body received: " + body);
+    }
+    
     @RequestMapping(value = "/shipments", method = RequestMethod.POST)
     public ResponseEntity<?> createShipment(Authentication authentication, 
-                                            @RequestBody Map<String, Object> request) {
+                                            @RequestBody(required = false) Map<String, Object> request) {
+        System.out.println("🔵 CustomerController - Create shipment request received");
+        System.out.println("📦 Authentication: " + (authentication != null ? authentication.getName() : "NULL"));
+        System.out.println("📦 Request data: " + request);
+        
+        if (authentication == null) {
+            System.out.println("❌ Authentication is NULL!");
+            return ResponseEntity.status(401).body("Not authenticated");
+        }
+        
+        if (request == null || request.isEmpty()) {
+            System.out.println("❌ Request body is NULL or empty!");
+            return ResponseEntity.badRequest().body("Request body is required");
+        }
+        
         try {
             String email = authentication.getName();
+            System.out.println("👤 User email: " + email);
             User user = userService.getUserByEmail(email);
+            System.out.println("✅ User found: " + user.getEmail() + ", Role: " + user.getRole());
             
             Shipment shipment = new Shipment();
             
-            // Handle both old and new field formats
-            String origin = request.containsKey("origin") ? 
-                (String) request.get("origin") : 
-                request.get("originCountry") + ", " + request.get("originAddress");
-            String destination = request.containsKey("destination") ? 
-                (String) request.get("destination") : 
-                request.get("destinationCountry") + ", " + request.get("destinationAddress");
+            // Sender Information
+            shipment.setSenderName((String) request.get("senderName"));
+            shipment.setSenderPhone((String) request.get("senderPhone"));
+            shipment.setSenderEmail((String) request.get("senderEmail"));
             
+            // Origin Information
+            shipment.setOriginCountry((String) request.get("originCountry"));
+            shipment.setOriginCity((String) request.get("originCity"));
+            shipment.setOriginAddress((String) request.get("originAddress"));
+            shipment.setOriginPostalCode((String) request.get("originPostalCode"));
+            
+            // For backward compatibility - combine into origin field
+            String origin = request.get("originAddress") + ", " + 
+                           request.get("originCity") + ", " + 
+                           request.get("originCountry");
             shipment.setOrigin(origin);
+            
+            // Recipient Information
+            shipment.setRecipientName((String) request.get("recipientName"));
+            shipment.setRecipientPhone((String) request.get("recipientPhone"));
+            shipment.setRecipientEmail((String) request.get("recipientEmail"));
+            
+            // Destination Information
+            shipment.setDestinationCountry((String) request.get("destinationCountry"));
+            shipment.setDestinationCity((String) request.get("destinationCity"));
+            shipment.setDestinationAddress((String) request.get("destinationAddress"));
+            shipment.setDestinationPostalCode((String) request.get("destinationPostalCode"));
+            
+            // For backward compatibility - combine into destination field
+            String destination = request.get("destinationAddress") + ", " + 
+                                request.get("destinationCity") + ", " + 
+                                request.get("destinationCountry");
             shipment.setDestination(destination);
+            
+            // Package Details
             shipment.setDescription((String) request.get("description"));
             shipment.setWeight(Double.valueOf(request.get("weight").toString()));
+            shipment.setQuantity(request.get("quantity") != null ? 
+                Integer.valueOf(request.get("quantity").toString()) : 1);
+            
+            // Dimensions
+            if (request.get("length") != null && !request.get("length").toString().isEmpty()) {
+                shipment.setLength(Double.valueOf(request.get("length").toString()));
+            }
+            if (request.get("width") != null && !request.get("width").toString().isEmpty()) {
+                shipment.setWidth(Double.valueOf(request.get("width").toString()));
+            }
+            if (request.get("height") != null && !request.get("height").toString().isEmpty()) {
+                shipment.setHeight(Double.valueOf(request.get("height").toString()));
+            }
+            
+            // Additional Information
+            if (request.get("declaredValue") != null && !request.get("declaredValue").toString().isEmpty()) {
+                shipment.setDeclaredValue(Double.valueOf(request.get("declaredValue").toString()));
+            }
+            shipment.setInsurance(request.get("insurance") != null ? 
+                (Boolean) request.get("insurance") : false);
+            shipment.setFragile(request.get("fragile") != null ? 
+                (Boolean) request.get("fragile") : false);
+            shipment.setSpecialInstructions((String) request.get("specialInstructions"));
             
             Long productTypeId = Long.valueOf(request.get("productTypeId").toString());
+            System.out.println("🏷️  Product Type ID: " + productTypeId);
             
             Shipment createdShipment = shipmentService.createShipment(shipment, user.getId(), productTypeId);
+            System.out.println("✅ Shipment created successfully: " + createdShipment.getId());
             return ResponseEntity.ok(createdShipment);
         } catch (Exception e) {
+            System.out.println("❌ Error creating shipment: " + e.getClass().getName());
+            System.out.println("❌ Error message: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
@@ -142,18 +218,66 @@ public class CustomerController {
                 return ResponseEntity.badRequest().body("Can only edit shipments in REQUESTED status");
             }
             
-            // Update shipment fields
-            String origin = request.containsKey("origin") ? 
-                (String) request.get("origin") : 
-                request.get("originCountry") + ", " + request.get("originAddress");
-            String destination = request.containsKey("destination") ? 
-                (String) request.get("destination") : 
-                request.get("destinationCountry") + ", " + request.get("destinationAddress");
+            // Sender Information
+            shipment.setSenderName((String) request.get("senderName"));
+            shipment.setSenderPhone((String) request.get("senderPhone"));
+            shipment.setSenderEmail((String) request.get("senderEmail"));
             
+            // Origin Information
+            shipment.setOriginCountry((String) request.get("originCountry"));
+            shipment.setOriginCity((String) request.get("originCity"));
+            shipment.setOriginAddress((String) request.get("originAddress"));
+            shipment.setOriginPostalCode((String) request.get("originPostalCode"));
+            
+            // For backward compatibility
+            String origin = request.get("originAddress") + ", " + 
+                           request.get("originCity") + ", " + 
+                           request.get("originCountry");
             shipment.setOrigin(origin);
+            
+            // Recipient Information
+            shipment.setRecipientName((String) request.get("recipientName"));
+            shipment.setRecipientPhone((String) request.get("recipientPhone"));
+            shipment.setRecipientEmail((String) request.get("recipientEmail"));
+            
+            // Destination Information
+            shipment.setDestinationCountry((String) request.get("destinationCountry"));
+            shipment.setDestinationCity((String) request.get("destinationCity"));
+            shipment.setDestinationAddress((String) request.get("destinationAddress"));
+            shipment.setDestinationPostalCode((String) request.get("destinationPostalCode"));
+            
+            // For backward compatibility
+            String destination = request.get("destinationAddress") + ", " + 
+                                request.get("destinationCity") + ", " + 
+                                request.get("destinationCountry");
             shipment.setDestination(destination);
+            
+            // Package Details
             shipment.setDescription((String) request.get("description"));
             shipment.setWeight(Double.valueOf(request.get("weight").toString()));
+            shipment.setQuantity(request.get("quantity") != null ? 
+                Integer.valueOf(request.get("quantity").toString()) : 1);
+            
+            // Dimensions
+            if (request.get("length") != null && !request.get("length").toString().isEmpty()) {
+                shipment.setLength(Double.valueOf(request.get("length").toString()));
+            }
+            if (request.get("width") != null && !request.get("width").toString().isEmpty()) {
+                shipment.setWidth(Double.valueOf(request.get("width").toString()));
+            }
+            if (request.get("height") != null && !request.get("height").toString().isEmpty()) {
+                shipment.setHeight(Double.valueOf(request.get("height").toString()));
+            }
+            
+            // Additional Information
+            if (request.get("declaredValue") != null && !request.get("declaredValue").toString().isEmpty()) {
+                shipment.setDeclaredValue(Double.valueOf(request.get("declaredValue").toString()));
+            }
+            shipment.setInsurance(request.get("insurance") != null ? 
+                (Boolean) request.get("insurance") : false);
+            shipment.setFragile(request.get("fragile") != null ? 
+                (Boolean) request.get("fragile") : false);
+            shipment.setSpecialInstructions((String) request.get("specialInstructions"));
             
             Long productTypeId = Long.valueOf(request.get("productTypeId").toString());
             ProductType productType = productTypeService.getProductTypeById(productTypeId);
@@ -162,6 +286,7 @@ public class CustomerController {
             Shipment updatedShipment = shipmentService.updateShipment(shipment);
             return ResponseEntity.ok(updatedShipment);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

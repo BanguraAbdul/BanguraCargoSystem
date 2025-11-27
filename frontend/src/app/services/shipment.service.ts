@@ -31,7 +31,7 @@ export class ShipmentService {
   }
 
   deleteShipment(shipmentId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/admin/shipments/${shipmentId}`);
+    return this.http.delete(`${this.apiUrl}/admin/shipments/${shipmentId}`, { responseType: 'text' as 'json' });
   }
 
   // Customer methods
@@ -40,7 +40,7 @@ export class ShipmentService {
   }
 
   deleteCustomerShipment(shipmentId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/customer/shipments/${shipmentId}`);
+    return this.http.delete(`${this.apiUrl}/customer/shipments/${shipmentId}`, { responseType: 'text' as 'json' });
   }
 
   getShipmentById(shipmentId: number): Observable<Shipment> {

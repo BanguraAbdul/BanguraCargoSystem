@@ -10,7 +10,7 @@
 }
 
 .page-header h1 {
-  color: #4d148c;
+  color: #1e3a5f;
   font-size: 2.5rem;
   margin-bottom: 10px;
 }
@@ -38,7 +38,7 @@
 }
 
 .form-section h3 {
-  color: #4d148c;
+  color: #1e3a5f;
   font-size: 1.3rem;
   margin-bottom: 20px;
   font-weight: 600;
@@ -46,7 +46,7 @@
 
 .form-section h3 i {
   margin-right: 10px;
-  color: #ff6200;
+  color: #ff6b35;
 }
 
 .form-label {
@@ -63,17 +63,17 @@
 }
 
 .form-control:focus, .form-select:focus {
-  border-color: #4d148c;
-  box-shadow: 0 0 0 0.2rem rgba(77, 20, 140, 0.25);
+  border-color: #1e3a5f;
+  box-shadow: 0 0 0 0.2rem rgba(30, 58, 95, 0.25);
 }
 
 .form-control.is-invalid {
-  border-color: #dc3545;
+  border-color: #c1121f;
 }
 
 .invalid-feedback {
   display: block;
-  color: #dc3545;
+  color: #c1121f;
   font-size: 0.875rem;
   margin-top: 5px;
 }
@@ -93,13 +93,13 @@
 }
 
 .btn-primary {
-  background: #ff6200;
+  background: #ff6b35;
   border: none;
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
-  background: #e55a00;
+  background: #e55a2d;
 }
 
 .btn-primary:disabled {
@@ -127,7 +127,7 @@
 }
 
 .estimate-card h3 {
-  color: #4d148c;
+  color: #1e3a5f;
   font-size: 1.2rem;
   margin-bottom: 20px;
   font-weight: 600;
@@ -136,7 +136,7 @@
 .estimate-amount {
   text-align: center;
   padding: 20px;
-  background: linear-gradient(135deg, #4d148c 0%, #7b2cbf 100%);
+  background: linear-gradient(135deg, #1e3a5f 0%, #2c5282 100%);
   border-radius: 8px;
   margin-bottom: 15px;
 }
@@ -165,7 +165,7 @@
 }
 
 .estimate-note i {
-  color: #ff6200;
+  color: #ff6b35;
   margin-right: 5px;
 }
 
@@ -199,7 +199,7 @@
 }
 
 .help-card h4 {
-  color: #4d148c;
+  color: #1e3a5f;
   margin-bottom: 15px;
 }
 
@@ -209,13 +209,13 @@
 }
 
 .btn-outline-primary {
-  border: 2px solid #4d148c;
-  color: #4d148c;
+  border: 2px solid #1e3a5f;
+  color: #1e3a5f;
   background: white;
 }
 
 .btn-outline-primary:hover {
-  background: #4d148c;
+  background: #1e3a5f;
   color: white;
 }
 
@@ -240,7 +240,7 @@
 }
 
 .status-card h4 {
-  color: #4d148c;
+  color: #1e3a5f;
   margin-bottom: 20px;
   font-size: 1.1rem;
 }
@@ -265,7 +265,7 @@
 }
 
 .status-item.complete i {
-  color: #28a745;
+  color: #00a896;
 }
 
 .form-validity {
@@ -279,13 +279,13 @@
 .form-validity.valid {
   background: #d4edda;
   color: #155724;
-  border: 2px solid #28a745;
+  border: 2px solid #00a896;
 }
 
 .form-validity.invalid {
   background: #f8d7da;
   color: #721c24;
-  border: 2px solid #dc3545;
+  border: 2px solid #c1121f;
 }
 
 /* Form Check */
@@ -310,7 +310,7 @@
 
 .form-check-label i {
   margin-right: 5px;
-  color: #ff6200;
+  color: #ff6b35;
 }
 
 /* Text Muted */
@@ -322,7 +322,7 @@
 }
 
 .text-info {
-  color: #17a2b8;
+  color: #4a90e2;
   font-weight: 500;
 }
 

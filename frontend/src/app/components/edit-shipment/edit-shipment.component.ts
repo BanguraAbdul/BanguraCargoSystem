@@ -83,47 +83,46 @@ export class EditShipmentComponent implements OnInit {
           return;
         }
 
-        // Parse origin and destination addresses
-        // Format: "Country, City, Address" or just use as-is
-        const originParts = shipment.origin?.split(',').map(s => s.trim()) || [];
-        const destinationParts = shipment.destination?.split(',').map(s => s.trim()) || [];
-
-        // Populate form with shipment data
+        // Populate form with ALL shipment data from backend
         this.shipmentForm.patchValue({
-          // Sender info - use placeholder data since backend doesn't store this separately
-          senderName: '',
-          senderPhone: '',
-          senderEmail: '',
+          // Sender Information
+          senderName: shipment.senderName || '',
+          senderPhone: shipment.senderPhone || '',
+          senderEmail: shipment.senderEmail || '',
           
-          // Origin
-          originCountry: originParts[0] || '',
-          originCity: originParts[1] || '',
-          originAddress: originParts.slice(2).join(', ') || originParts.join(', '),
-          originPostalCode: '',
+          // Origin Information
+          originCountry: shipment.originCountry || '',
+          originCity: shipment.originCity || '',
+          originAddress: shipment.originAddress || '',
+          originPostalCode: shipment.originPostalCode || '',
           
-          // Recipient info - use placeholder data
-          recipientName: '',
-          recipientPhone: '',
-          recipientEmail: '',
+          // Recipient Information
+          recipientName: shipment.recipientName || '',
+          recipientPhone: shipment.recipientPhone || '',
+          recipientEmail: shipment.recipientEmail || '',
           
-          // Destination
-          destinationCountry: destinationParts[0] || '',
-          destinationCity: destinationParts[1] || '',
-          destinationAddress: destinationParts.slice(2).join(', ') || destinationParts.join(', '),
-          destinationPostalCode: '',
+          // Destination Information
+          destinationCountry: shipment.destinationCountry || '',
+          destinationCity: shipment.destinationCity || '',
+          destinationAddress: shipment.destinationAddress || '',
+          destinationPostalCode: shipment.destinationPostalCode || '',
           
-          // Package details
+          // Package Details
           productTypeId: shipment.productType?.id || 1,
           weight: shipment.weight || 0,
-          quantity: 1, // Backend doesn't store quantity
-          length: '',
-          width: '',
-          height: '',
+          quantity: shipment.quantity || 1,
           description: shipment.description || '',
-          declaredValue: '',
-          insurance: false,
-          fragile: false,
-          specialInstructions: ''
+          
+          // Dimensions
+          length: shipment.length || '',
+          width: shipment.width || '',
+          height: shipment.height || '',
+          
+          // Additional Information
+          declaredValue: shipment.declaredValue || '',
+          insurance: shipment.insurance || false,
+          fragile: shipment.fragile || false,
+          specialInstructions: shipment.specialInstructions || ''
         });
         
         this.loading = false;
@@ -178,14 +177,44 @@ export class EditShipmentComponent implements OnInit {
     }
 
     const formData = {
+      // Sender Information
+      senderName: this.shipmentForm.value.senderName,
+      senderPhone: this.shipmentForm.value.senderPhone,
+      senderEmail: this.shipmentForm.value.senderEmail,
+      
+      // Origin Information
       originCountry: this.shipmentForm.value.originCountry,
+      originCity: this.shipmentForm.value.originCity,
+      originAddress: this.shipmentForm.value.originAddress,
+      originPostalCode: this.shipmentForm.value.originPostalCode,
+      
+      // Recipient Information
+      recipientName: this.shipmentForm.value.recipientName,
+      recipientPhone: this.shipmentForm.value.recipientPhone,
+      recipientEmail: this.shipmentForm.value.recipientEmail,
+      
+      // Destination Information
       destinationCountry: this.shipmentForm.value.destinationCountry,
-      originAddress: `${this.shipmentForm.value.originAddress}, ${this.shipmentForm.value.originCity}, ${this.shipmentForm.value.originCountry}`,
-      destinationAddress: `${this.shipmentForm.value.destinationAddress}, ${this.shipmentForm.value.destinationCity}, ${this.shipmentForm.value.destinationCountry}`,
+      destinationCity: this.shipmentForm.value.destinationCity,
+      destinationAddress: this.shipmentForm.value.destinationAddress,
+      destinationPostalCode: this.shipmentForm.value.destinationPostalCode,
+      
+      // Package Details
       productTypeId: this.shipmentForm.value.productTypeId,
       weight: this.shipmentForm.value.weight,
       quantity: this.shipmentForm.value.quantity,
-      description: this.shipmentForm.value.description
+      description: this.shipmentForm.value.description,
+      
+      // Dimensions
+      length: this.shipmentForm.value.length,
+      width: this.shipmentForm.value.width,
+      height: this.shipmentForm.value.height,
+      
+      // Additional Information
+      declaredValue: this.shipmentForm.value.declaredValue,
+      insurance: this.shipmentForm.value.insurance,
+      fragile: this.shipmentForm.value.fragile,
+      specialInstructions: this.shipmentForm.value.specialInstructions
     };
 
     this.alertService.loading('Updating shipment...');
@@ -193,7 +222,12 @@ export class EditShipmentComponent implements OnInit {
       next: () => {
         this.alertService.close();
         this.alertService.success('Your shipment has been updated successfully!', 'Success').then(() => {
-          this.router.navigate(['/customer']);
+          // Send message to parent window if in iframe
+          if (window.parent !== window) {
+            window.parent.postMessage('shipment-updated', '*');
+          } else {
+            this.router.navigate(['/customer']);
+          }
         });
       },
       error: (err) => {

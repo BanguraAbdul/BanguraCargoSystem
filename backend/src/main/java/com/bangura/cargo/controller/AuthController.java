@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "http://localhost:4200", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS})
 public class AuthController {
     
     @Autowired
@@ -52,17 +52,23 @@ public class AuthController {
     
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequest request) {
+        System.out.println("🔵 AuthController - Login request received for email: " + request.getEmail());
         try {
+            System.out.println("🔐 AuthController - Attempting authentication...");
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
+            System.out.println("✅ AuthController - Authentication successful");
             
             UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
             String token = jwtUtil.generateToken(userDetails);
+            System.out.println("🔑 AuthController - JWT token generated");
             
             User user = userService.getUserByEmail(request.getEmail());
+            System.out.println("👤 AuthController - User loaded: " + user.getEmail() + ", Role: " + user.getRole() + ", Status: " + user.getStatus());
             
             if (user.getStatus() != User.UserStatus.APPROVED) {
+                System.out.println("❌ AuthController - User not approved");
                 return ResponseEntity.badRequest().body("Account is not approved yet");
             }
             
@@ -74,8 +80,11 @@ public class AuthController {
                     user.getStatus().name()
             );
             
+            System.out.println("✅ AuthController - Returning success response");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
+            System.out.println("❌ AuthController - Login failed: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.badRequest().body("Invalid credentials");
         }
     }

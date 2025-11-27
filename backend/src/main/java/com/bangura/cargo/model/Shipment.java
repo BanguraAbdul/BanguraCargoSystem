@@ -32,20 +32,78 @@ public class Shipment {
     @JsonIgnoreProperties({"shipments"})
     private ProductType productType;
     
+    // Sender Information
+    private String senderName;
+    private String senderPhone;
+    private String senderEmail;
+    
+    // Origin Information
+    @NotBlank(message = "Origin country is required")
+    @Column(nullable = false)
+    private String originCountry;
+    
+    @NotBlank(message = "Origin city is required")
+    @Column(nullable = false)
+    private String originCity;
+    
+    @NotBlank(message = "Origin address is required")
+    @Column(nullable = false)
+    private String originAddress;
+    
+    private String originPostalCode;
+    
+    // For backward compatibility
     @NotBlank(message = "Origin is required")
     @Column(nullable = false)
     private String origin;
     
+    // Recipient Information
+    private String recipientName;
+    private String recipientPhone;
+    private String recipientEmail;
+    
+    // Destination Information
+    @NotBlank(message = "Destination country is required")
+    @Column(nullable = false)
+    private String destinationCountry;
+    
+    @NotBlank(message = "Destination city is required")
+    @Column(nullable = false)
+    private String destinationCity;
+    
+    @NotBlank(message = "Destination address is required")
+    @Column(nullable = false)
+    private String destinationAddress;
+    
+    private String destinationPostalCode;
+    
+    // For backward compatibility
     @NotBlank(message = "Destination is required")
     @Column(nullable = false)
     private String destination;
     
+    // Package Details
     @Column(length = 1000)
     private String description;
     
     @NotNull(message = "Weight is required")
     @Column(nullable = false)
     private Double weight;
+    
+    private Integer quantity;
+    
+    // Dimensions
+    private Double length;
+    private Double width;
+    private Double height;
+    
+    // Additional Information
+    private Double declaredValue;
+    private Boolean insurance;
+    private Boolean fragile;
+    
+    @Column(length = 500)
+    private String specialInstructions;
     
     @Column(unique = true)
     private String trackingNumber;

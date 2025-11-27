@@ -68,6 +68,38 @@ export class LandingComponent {
     }
   }
 
+  handleCreateShipment() {
+    console.log('🔵 Create Shipment clicked');
+    console.log('🔐 Is authenticated?', this.authService.isAuthenticated());
+    console.log('🔑 Token:', localStorage.getItem('token'));
+    
+    // Check if user is authenticated
+    if (this.authService.isAuthenticated()) {
+      console.log('✅ User is authenticated, navigating to create-shipment');
+      // User is logged in, redirect to create shipment page
+      this.router.navigate(['/create-shipment']);
+    } else {
+      console.log('❌ User is NOT authenticated, showing login modal');
+      // User not logged in, show login modal with message
+      this.alertService.info('Please login to create a shipment', 'Login Required').then(() => {
+        this.openLoginModal();
+      });
+    }
+  }
+
+  handleSchedulePickup() {
+    // Check if user is authenticated
+    if (this.authService.isAuthenticated()) {
+      // User is logged in, redirect to schedule pickup page
+      this.router.navigate(['/schedule-pickup']);
+    } else {
+      // User not logged in, show login modal with message
+      this.alertService.info('Please login to schedule a pickup', 'Login Required').then(() => {
+        this.openLoginModal();
+      });
+    }
+  }
+
   onRegisterSubmit() {
     console.log('🔵 Registration form submitted');
     console.log('📝 Register data:', this.registerData);

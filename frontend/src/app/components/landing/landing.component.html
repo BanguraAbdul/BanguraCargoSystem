@@ -17,9 +17,9 @@
             <button class="btn-nav btn-nav-primary" (click)="openRegisterModal()">
               <i class="fas fa-user-plus"></i> Sign Up
             </button>
-            <div class="language-selector">
+            <!-- <div class="language-selector">
               <i class="fas fa-globe"></i> English
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -82,17 +82,13 @@
           
           <!-- Quick Actions -->
           <div class="quick-actions">
-            <div class="action-card" [routerLink]="['/create-shipment']">
-              <i class="fas fa-box-open"></i>
-              <h3>Create Shipment</h3>
-              <p>Start shipping now</p>
-            </div>
+    
             <div class="action-card" [routerLink]="['/rates']">
               <i class="fas fa-calculator"></i>
               <h3>Get Rates</h3>
               <p>Compare prices</p>
             </div>
-            <div class="action-card" [routerLink]="['/schedule-pickup']">
+            <div class="action-card" (click)="handleSchedulePickup()" style="cursor: pointer;">
               <i class="fas fa-calendar-check"></i>
               <h3>Schedule Pickup</h3>
               <p>Book collection</p>

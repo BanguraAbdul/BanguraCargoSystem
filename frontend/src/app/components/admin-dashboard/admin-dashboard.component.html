@@ -70,10 +70,20 @@
           <h5 class="mb-0"><i class="bi bi-person-check"></i> Pending Customer Approvals</h5>
         </div>
         <div class="card-body">
+          <div class="mb-3" *ngIf="pendingCustomers.length > 0">
+            <input type="text" 
+                   class="form-control" 
+                   [(ngModel)]="searchTermCustomers" 
+                   (ngModelChange)="filterPendingCustomers()"
+                   placeholder="🔍 Search by name, email, or contact...">
+          </div>
           <div *ngIf="pendingCustomers.length === 0" class="alert alert-info">
             No pending customers
           </div>
-          <div class="table-responsive" *ngIf="pendingCustomers.length > 0">
+          <div *ngIf="filteredPendingCustomers.length === 0 && pendingCustomers.length > 0" class="alert alert-warning">
+            <i class="bi bi-search"></i> No customers match your search.
+          </div>
+          <div class="table-responsive" *ngIf="filteredPendingCustomers.length > 0">
             <table class="table table-hover">
               <thead>
                 <tr>
@@ -85,7 +95,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let user of pendingCustomers">
+                <tr *ngFor="let user of filteredPendingCustomers">
                   <td>{{ user.firstName }} {{ user.lastName }}</td>
                   <td>{{ user.email }}</td>
                   <td>{{ user.contact }}</td>
@@ -115,10 +125,20 @@
           <h5 class="mb-0"><i class="bi bi-box-seam"></i> All Shipments</h5>
         </div>
         <div class="card-body">
+          <div class="mb-3" *ngIf="shipments.length > 0">
+            <input type="text" 
+                   class="form-control" 
+                   [(ngModel)]="searchTermShipments" 
+                   (ngModelChange)="filterShipments()"
+                   placeholder="🔍 Search by ID, origin, destination, status, or tracking number...">
+          </div>
           <div *ngIf="shipments.length === 0" class="alert alert-info">
             No shipments yet
           </div>
-          <div class="table-responsive" *ngIf="shipments.length > 0">
+          <div *ngIf="filteredShipments.length === 0 && shipments.length > 0" class="alert alert-warning">
+            <i class="bi bi-search"></i> No shipments match your search.
+          </div>
+          <div class="table-responsive" *ngIf="filteredShipments.length > 0">
             <table class="table table-hover">
               <thead>
                 <tr>
@@ -131,7 +151,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let shipment of shipments">
+                <tr *ngFor="let shipment of filteredShipments">
                   <td>#{{ shipment.id }}</td>
                   <td>{{ shipment.user?.firstName }} {{ shipment.user?.lastName }}</td>
                   <td>{{ shipment.origin }}</td>
@@ -178,6 +198,16 @@
           <h5 class="mb-0"><i class="bi bi-people"></i> All Users</h5>
         </div>
         <div class="card-body">
+          <div class="mb-3" *ngIf="allUsers.length > 0">
+            <input type="text" 
+                   class="form-control" 
+                   [(ngModel)]="searchTermUsers" 
+                   (ngModelChange)="filterAllUsers()"
+                   placeholder="🔍 Search by name, email, contact, or role...">
+          </div>
+          <div *ngIf="filteredAllUsers.length === 0 && allUsers.length > 0" class="alert alert-warning">
+            <i class="bi bi-search"></i> No users match your search.
+          </div>
           <div class="table-responsive">
             <table class="table table-hover">
               <thead>
@@ -190,7 +220,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr *ngFor="let user of allUsers">
+                <tr *ngFor="let user of filteredAllUsers">
                   <td>{{ user.firstName }} {{ user.lastName }}</td>
                   <td>{{ user.email }}</td>
                   <td>{{ user.contact }}</td>

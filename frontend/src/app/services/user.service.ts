@@ -36,7 +36,7 @@ export class UserService {
 
   // Super Admin methods
   deleteSuperAdminUser(userId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/super-admin/users/${userId}`);
+    return this.http.delete(`${this.apiUrl}/super-admin/users/${userId}`, { responseType: 'text' as 'json' });
   }
 
   getAllUsersSuperAdmin(): Observable<User[]> {

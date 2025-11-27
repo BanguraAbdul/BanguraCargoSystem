@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { UserService } from '../../services/user.service';
 import { ShipmentService } from '../../services/shipment.service';
@@ -10,7 +11,7 @@ import { Shipment } from '../../models/shipment.model';
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [CommonModule, NavbarComponent],
+  imports: [CommonModule, FormsModule, NavbarComponent],
   templateUrl: './admin-dashboard.component.html',
   styleUrls: ['./admin-dashboard.component.css']
 })
@@ -24,8 +25,14 @@ import { Shipment } from '../../models/shipment.model';
 
   activeTab = 'customers';
   pendingCustomers: User[] = [];
+  filteredPendingCustomers: User[] = [];
   allUsers: User[] = [];
+  filteredAllUsers: User[] = [];
   shipments: Shipment[] = [];
+  filteredShipments: Shipment[] = [];
+  searchTermCustomers: string = '';
+  searchTermUsers: string = '';
+  searchTermShipments: string = '';
 
   get deliveredCount(): number {
     return this.shipments.filter(s => s.status === 'DELIVERED').length;
@@ -42,9 +49,51 @@ import { Shipment } from '../../models/shipment.model';
   }
 
   loadData() {
-    this.userService.getPendingCustomers().subscribe(users => this.pendingCustomers = users);
-    this.userService.getAllUsers().subscribe(users => this.allUsers = users);
-    this.shipmentService.getAllShipments().subscribe(shipments => this.shipments = shipments);
+    this.userService.getPendingCustomers().subscribe(users => {
+      this.pendingCustomers = users;
+      this.filteredPendingCustomers = users;
+    });
+    this.userService.getAllUsers().subscribe(users => {
+      this.allUsers = users;
+      this.filteredAllUsers = users;
+    });
+    this.shipmentService.getAllShipments().subscribe(shipments => {
+      this.shipments = shipments;
+      this.filteredShipments = shipments;
+    });
+  }
+
+  filterPendingCustomers() {
+    const term = this.searchTermCustomers.toLowerCase();
+    this.filteredPendingCustomers = this.pendingCustomers.filter(user =>
+      user.firstName?.toLowerCase().includes(term) ||
+      user.lastName?.toLowerCase().includes(term) ||
+      user.email?.toLowerCase().includes(term) ||
+      user.contact?.includes(term)
+    );
+  }
+
+  filterAllUsers() {
+    const term = this.searchTermUsers.toLowerCase();
+    this.filteredAllUsers = this.allUsers.filter(user =>
+      user.firstName?.toLowerCase().includes(term) ||
+      user.lastName?.toLowerCase().includes(term) ||
+      user.email?.toLowerCase().includes(term) ||
+      user.contact?.includes(term) ||
+      user.role?.toLowerCase().includes(term)
+    );
+  }
+
+  filterShipments() {
+    const term = this.searchTermShipments.toLowerCase();
+    this.filteredShipments = this.shipments.filter(shipment =>
+      shipment.id?.toString().includes(term) ||
+      shipment.origin?.toLowerCase().includes(term) ||
+      shipment.destination?.toLowerCase().includes(term) ||
+      shipment.status?.toLowerCase().includes(term) ||
+      shipment.trackingNumber?.toLowerCase().includes(term) ||
+      shipment.user?.email?.toLowerCase().includes(term)
+    );
   }
 
   approveCustomer(userId: number) {
