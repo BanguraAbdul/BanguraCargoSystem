@@ -1,0 +1,69 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="login-header">
+      <div class="logo-container">
+        <i class="bi bi-box-seam logo-icon"></i>
+      </div>
+      <h2 class="text-center mb-2">Bangura Cargo System</h2>
+      <p class="text-center" style="color: #010200ff">Sign in to your account</p>
+    </div>
+    
+    <div class="login-body">
+      <form (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label class="form-label">
+            <i class="bi bi-person-badge"></i> Login As
+          </label>
+          <select class="form-select form-select-lg" 
+                  [(ngModel)]="selectedRole" 
+                  name="role">
+            <option value="SUPER_ADMIN">Super Admin</option>
+            <option value="ADMIN">Admin</option>
+            <option value="CUSTOMER">Customer</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">
+            <i class="bi bi-envelope"></i> Email Address
+          </label>
+          <input type="email" 
+                 class="form-control form-control-lg" 
+                 [(ngModel)]="credentials.email" 
+                 name="email" 
+                 placeholder="Enter your email"
+                 required>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label">
+            <i class="bi bi-lock"></i> Password
+          </label>
+          <input type="password" 
+                 class="form-control form-control-lg" 
+                 [(ngModel)]="credentials.password" 
+                 name="password" 
+                 placeholder="Enter your password"
+                 required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+          <i class="bi bi-box-arrow-in-right"></i> Sign In
+        </button>
+
+        <div class="text-center">
+          <p class="mb-0">Don't have an account? 
+            <a routerLink="/register" class="text-primary fw-bold">Register here</a>
+          </p>
+        </div>
+      </form>
+
+      <div class="demo-credentials mt-4">
+        <p class="text-muted small mb-2"><i class="bi bi-info-circle"></i> NOTE:</p>
+        <div class="credential-box">
+          <strong>Be sure you choose your login level</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

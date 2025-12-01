@@ -33,6 +33,25 @@ import { Shipment } from '../../models/shipment.model';
   searchTermCustomers: string = '';
   searchTermUsers: string = '';
   searchTermShipments: string = '';
+  
+  // Advanced filters
+  filterCustomerStatus: string = 'ALL';
+  filterUserRole: string = 'ALL';
+  filterUserStatus: string = 'ALL';
+  filterShipmentStatus: string = 'ALL';
+  filterShipmentCustomer: string = '';
+  
+  // Edit User Modal
+  showEditUserModal = false;
+  editingUser: User = {
+    firstName: '',
+    lastName: '',
+    email: '',
+    contact: '',
+    address: '',
+    role: 'CUSTOMER',
+    status: 'PENDING'
+  };
 
   get deliveredCount(): number {
     return this.shipments.filter(s => s.status === 'DELIVERED').length;
@@ -65,35 +84,58 @@ import { Shipment } from '../../models/shipment.model';
 
   filterPendingCustomers() {
     const term = this.searchTermCustomers.toLowerCase();
-    this.filteredPendingCustomers = this.pendingCustomers.filter(user =>
-      user.firstName?.toLowerCase().includes(term) ||
-      user.lastName?.toLowerCase().includes(term) ||
-      user.email?.toLowerCase().includes(term) ||
-      user.contact?.includes(term)
-    );
+    this.filteredPendingCustomers = this.pendingCustomers.filter(user => {
+      const matchesSearch = user.firstName?.toLowerCase().includes(term) ||
+                           user.lastName?.toLowerCase().includes(term) ||
+                           user.email?.toLowerCase().includes(term) ||
+                           user.contact?.includes(term);
+      
+      const matchesStatus = this.filterCustomerStatus === 'ALL' || 
+                           user.status === this.filterCustomerStatus;
+      
+      return matchesSearch && matchesStatus;
+    });
   }
 
   filterAllUsers() {
     const term = this.searchTermUsers.toLowerCase();
-    this.filteredAllUsers = this.allUsers.filter(user =>
-      user.firstName?.toLowerCase().includes(term) ||
-      user.lastName?.toLowerCase().includes(term) ||
-      user.email?.toLowerCase().includes(term) ||
-      user.contact?.includes(term) ||
-      user.role?.toLowerCase().includes(term)
-    );
+    this.filteredAllUsers = this.allUsers.filter(user => {
+      const matchesSearch = user.firstName?.toLowerCase().includes(term) ||
+                           user.lastName?.toLowerCase().includes(term) ||
+                           user.email?.toLowerCase().includes(term) ||
+                           user.contact?.includes(term) ||
+                           user.role?.toLowerCase().includes(term);
+      
+      const matchesRole = this.filterUserRole === 'ALL' || 
+                         user.role === this.filterUserRole;
+      
+      const matchesStatus = this.filterUserStatus === 'ALL' || 
+                           user.status === this.filterUserStatus;
+      
+      return matchesSearch && matchesRole && matchesStatus;
+    });
   }
 
   filterShipments() {
     const term = this.searchTermShipments.toLowerCase();
-    this.filteredShipments = this.shipments.filter(shipment =>
-      shipment.id?.toString().includes(term) ||
-      shipment.origin?.toLowerCase().includes(term) ||
-      shipment.destination?.toLowerCase().includes(term) ||
-      shipment.status?.toLowerCase().includes(term) ||
-      shipment.trackingNumber?.toLowerCase().includes(term) ||
-      shipment.user?.email?.toLowerCase().includes(term)
-    );
+    const customerTerm = this.filterShipmentCustomer.toLowerCase();
+    
+    this.filteredShipments = this.shipments.filter(shipment => {
+      const matchesSearch = shipment.id?.toString().includes(term) ||
+                           shipment.origin?.toLowerCase().includes(term) ||
+                           shipment.destination?.toLowerCase().includes(term) ||
+                           shipment.trackingNumber?.toLowerCase().includes(term);
+      
+      const matchesStatus = this.filterShipmentStatus === 'ALL' || 
+                           shipment.status === this.filterShipmentStatus;
+      
+      const matchesCustomer = !customerTerm || 
+                             shipment.user?.firstName?.toLowerCase().includes(customerTerm) ||
+                             shipment.user?.lastName?.toLowerCase().includes(customerTerm) ||
+                             shipment.user?.email?.toLowerCase().includes(customerTerm);
+      
+      return matchesSearch && matchesStatus && matchesCustomer;
+    });
   }
 
   approveCustomer(userId: number) {
@@ -120,16 +162,87 @@ import { Shipment } from '../../models/shipment.model';
       if (result.isConfirmed) {
         this.alertService.loading('Deleting user...');
         this.userService.deleteUser(userId).subscribe({
-          next: () => {
+          next: (response) => {
+            console.log('Delete user response:', response);
             this.alertService.close();
-            this.alertService.success('User deleted successfully!');
-            this.loadData();
+            this.alertService.success('User deleted successfully!').then(() => {
+              this.loadData();
+            });
           },
-          error: () => {
+          error: (err) => {
+            console.error('Delete user error:', err);
             this.alertService.close();
-            this.alertService.error('Failed to delete user');
+            
+            // Check if it's actually a success (status 200) but with text response
+            if (err.status === 200 || err.status === 0) {
+              this.alertService.success('User deleted successfully!').then(() => {
+                this.loadData();
+              });
+            } else {
+              let errorMessage = 'Failed to delete user';
+              if (typeof err.error === 'string') {
+                errorMessage = err.error;
+              } else if (err.error?.message) {
+                errorMessage = err.error.message;
+              }
+              this.alertService.error(errorMessage);
+            }
           }
         });
+      }
+    });
+  }
+
+  editUser(user: User) {
+    // Create a copy of the user to edit
+    this.editingUser = { ...user };
+    this.showEditUserModal = true;
+  }
+
+  closeEditUserModal() {
+    this.showEditUserModal = false;
+    this.editingUser = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      contact: '',
+      address: '',
+      role: 'CUSTOMER',
+      status: 'PENDING'
+    };
+  }
+
+  saveUserChanges() {
+    if (!this.editingUser.id) {
+      this.alertService.error('Invalid user ID');
+      return;
+    }
+
+    // Validate required fields
+    if (!this.editingUser.firstName || !this.editingUser.lastName || 
+        !this.editingUser.email || !this.editingUser.contact) {
+      this.alertService.error('Please fill in all required fields');
+      return;
+    }
+
+    this.alertService.loading('Updating user...');
+    this.userService.updateUser(this.editingUser.id, this.editingUser).subscribe({
+      next: () => {
+        this.alertService.close();
+        this.alertService.success('User updated successfully!').then(() => {
+          this.closeEditUserModal();
+          this.loadData();
+        });
+      },
+      error: (err) => {
+        this.alertService.close();
+        let errorMessage = 'Failed to update user';
+        if (typeof err.error === 'string') {
+          errorMessage = err.error;
+        } else if (err.error?.message) {
+          errorMessage = err.error.message;
+        }
+        this.alertService.error(errorMessage);
       }
     });
   }
@@ -174,10 +287,12 @@ import { Shipment } from '../../models/shipment.model';
       if (result.isConfirmed) {
         this.alertService.loading('Deleting shipment...');
         this.shipmentService.deleteShipment(shipmentId).subscribe({
-          next: () => {
+          next: (response) => {
+            console.log('Delete shipment response:', response);
             this.alertService.close();
-            this.alertService.success('Shipment deleted successfully!');
-            this.loadData();
+            this.alertService.success('Shipment deleted successfully!').then(() => {
+              this.loadData();
+            });
           },
           error: (err) => {
             this.alertService.close();
@@ -187,8 +302,9 @@ import { Shipment } from '../../models/shipment.model';
             
             // Check if it's actually a success (status 200) but Angular thinks it's an error
             if (err.status === 200 || err.status === 0) {
-              this.alertService.success('Shipment deleted successfully!');
-              this.loadData();
+              this.alertService.success('Shipment deleted successfully!').then(() => {
+                this.loadData();
+              });
               return;
             }
             

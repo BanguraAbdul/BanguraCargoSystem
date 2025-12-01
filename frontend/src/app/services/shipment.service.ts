@@ -46,4 +46,9 @@ export class ShipmentService {
   getShipmentById(shipmentId: number): Observable<Shipment> {
     return this.http.get<Shipment>(`${this.apiUrl}/customer/shipments/${shipmentId}`);
   }
+
+  // Public tracking method (no authentication required)
+  trackShipment(trackingNumber: string): Observable<Shipment> {
+    return this.http.get<Shipment>(`${this.apiUrl}/auth/track/${trackingNumber}`);
+  }
 }

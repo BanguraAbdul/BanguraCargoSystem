@@ -31,7 +31,11 @@ export class UserService {
   }
 
   deleteUser(userId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/admin/users/${userId}`);
+    return this.http.delete(`${this.apiUrl}/admin/users/${userId}`, { responseType: 'text' as 'json' });
+  }
+
+  updateUser(userId: number, user: User): Observable<User> {
+    return this.http.put<User>(`${this.apiUrl}/admin/users/${userId}`, user);
   }
 
   // Super Admin methods

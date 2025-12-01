@@ -35,13 +35,13 @@
             <i class="fas fa-box"></i> Shipping
           </a>
           <div class="dropdown-menu">
-            <a [routerLink]="['/create-shipment']">Create a Shipment</a>
+            <a (click)="handleCreateShipment(); $event.preventDefault()" href="javascript:void(0)">Create a Shipment</a>
             <a [routerLink]="['/rates']">Shipping Rates & Delivery Times</a>
             <a [routerLink]="['/schedule-pickup']">Schedule and Manage Pickups</a>
           </div>
         </li>
         <li class="nav-item">
-          <a [routerLink]="['/tracking']" class="nav-link">
+          <a (click)="openTrackingModal()" class="nav-link" style="cursor: pointer;">
             <i class="fas fa-search-location"></i> Tracking
           </a>
         </li>
@@ -212,7 +212,7 @@
         <div class="col-md-3">
           <h5>Shipping</h5>
           <ul>
-            <li><a [routerLink]="['/create-shipment']">Create Shipment</a></li>
+            <li><a (click)="handleCreateShipment(); $event.preventDefault()" href="javascript:void(0)">Create Shipment</a></li>
             <li><a [routerLink]="['/rates']">Rates & Times</a></li>
             <li><a [routerLink]="['/schedule-pickup']">Schedule Pickup</a></li>
           </ul>
@@ -220,7 +220,7 @@
         <div class="col-md-3">
           <h5>Support</h5>
           <ul>
-            <li><a [routerLink]="['/tracking']">Track Shipment</a></li>
+            <li><a (click)="openTrackingModal()" style="cursor: pointer;">Track Shipment</a></li>
             <li><a [routerLink]="['/returns']">Returns</a></li>
             <li><a [routerLink]="['/contact']">Contact Us</a></li>
           </ul>
@@ -439,3 +439,139 @@
     </div>
   </div>
 </div>
+
+
+<!-- Tracking Modal -->
+<div class="modal fade" [class.show]="showTrackingModal" [style.display]="showTrackingModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">
+          <i class="bi bi-search"></i> Track Your Shipment
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closeTrackingModal()"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Tracking Input -->
+        <div class="mb-4" *ngIf="!trackingResult">
+          <label class="form-label fw-bold">
+            <i class="bi bi-box-seam"></i> Enter Tracking Number
+          </label>
+          <div class="input-group input-group-lg">
+            <input type="text" 
+                   class="form-control" 
+                   [(ngModel)]="trackingNumber" 
+                   placeholder="e.g., BC123456789"
+                   (keyup.enter)="trackShipment()">
+            <button class="btn btn-primary" 
+                    (click)="trackShipment()"
+                    [disabled]="isTrackingLoading">
+              <span *ngIf="!isTrackingLoading">
+                <i class="bi bi-search"></i> Track
+              </span>
+              <span *ngIf="isTrackingLoading">
+                <span class="spinner-border spinner-border-sm me-2"></span> Tracking...
+              </span>
+            </button>
+          </div>
+          <small class="text-muted">
+            <i class="bi bi-info-circle"></i> Enter your tracking number to see real-time shipment status
+          </small>
+        </div>
+
+        <!-- Tracking Results -->
+        <div *ngIf="trackingResult && !isTrackingLoading">
+          <!-- Status Header -->
+          <div class="alert alert-info d-flex align-items-center mb-4">
+            <i class="bi bi-box-seam fs-3 me-3"></i>
+            <div class="flex-grow-1">
+              <h6 class="mb-1">Tracking Number: <strong>{{ trackingResult.trackingNumber }}</strong></h6>
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge" 
+                      [class.bg-warning]="trackingResult.status === 'REQUESTED'"
+                      [class.bg-info]="trackingResult.status === 'APPROVED'"
+                      [class.bg-primary]="trackingResult.status === 'IN_TRANSIT'"
+                      [class.bg-success]="trackingResult.status === 'DELIVERED'">
+                  {{ trackingResult.status }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Shipment Details -->
+          <div class="row mb-4">
+            <div class="col-md-4">
+              <div class="tracking-detail-card">
+                <i class="bi bi-geo-alt text-primary"></i>
+                <h6>Origin</h6>
+                <p>{{ trackingResult.origin }}</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="tracking-detail-card">
+                <i class="bi bi-geo text-success"></i>
+                <h6>Destination</h6>
+                <p>{{ trackingResult.destination }}</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="tracking-detail-card">
+                <i class="bi bi-calendar-check text-info"></i>
+                <h6>Est. Delivery</h6>
+                <p>{{ trackingResult.estimatedDelivery | date:'mediumDate' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Current Location -->
+          <div class="alert alert-success mb-4">
+            <h6 class="mb-2">
+              <i class="bi bi-pin-map"></i> Current Location
+            </h6>
+            <p class="mb-0 fs-5">{{ trackingResult.currentLocation }}</p>
+          </div>
+
+          <!-- Tracking History -->
+          <h6 class="mb-3">
+            <i class="bi bi-clock-history"></i> Tracking History
+          </h6>
+          <div class="tracking-timeline">
+            <div class="timeline-item" *ngFor="let item of trackingResult.history; let i = index" 
+                 [class.completed]="item.completed"
+                 [class.pending]="!item.completed">
+              <div class="timeline-marker" 
+                   [class.completed]="item.completed"
+                   [class.pending]="!item.completed"></div>
+              <div class="timeline-content">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <h6 class="mb-1" [class.text-muted]="!item.completed">
+                      <i class="bi" [class.bi-check-circle-fill]="item.completed" [class.bi-clock]="!item.completed"></i>
+                      {{ item.status }}
+                    </h6>
+                    <p class="text-muted mb-0">
+                      <i class="bi bi-geo-alt"></i> {{ item.location }}
+                    </p>
+                  </div>
+                  <div class="text-end">
+                    <small class="text-muted">{{ item.date }}</small>
+                    <br *ngIf="item.time">
+                    <small class="text-muted" *ngIf="item.time">{{ item.time }}</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Track Another Button -->
+          <div class="text-center mt-4">
+            <button class="btn btn-outline-primary" (click)="trackingResult = null; trackingNumber = ''">
+              <i class="bi bi-search"></i> Track Another Shipment
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showTrackingModal" *ngIf="showTrackingModal" (click)="closeTrackingModal()"></div>

@@ -10,68 +10,8 @@ import { RegisterRequest } from '../../models/user.model';
   selector: 'app-register',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
-  template: `
-    <div class="container mt-5">
-      <div class="row justify-content-center">
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header">
-              <h3>Register</h3>
-            </div>
-            <div class="card-body">
-              <form (ngSubmit)="onSubmit()">
-                <div class="mb-3">
-                  <label for="role" class="form-label">Register As</label>
-                  <select class="form-select" id="role" 
-                          [(ngModel)]="registerData.role" name="role" required>
-                    <option value="CUSTOMER">Customer</option>
-                    <option value="ADMIN">Admin</option>
-                  </select>
-                  <small class="text-muted">Select Admin if you want administrative privileges</small>
-                </div>
-                <div class="mb-3">
-                  <label for="firstName" class="form-label">First Name</label>
-                  <input type="text" class="form-control" id="firstName" 
-                         [(ngModel)]="registerData.firstName" name="firstName" required>
-                </div>
-                <div class="mb-3">
-                  <label for="lastName" class="form-label">Last Name</label>
-                  <input type="text" class="form-control" id="lastName" 
-                         [(ngModel)]="registerData.lastName" name="lastName" required>
-                </div>
-                <div class="mb-3">
-                  <label for="email" class="form-label">Email</label>
-                  <input type="email" class="form-control" id="email" 
-                         [(ngModel)]="registerData.email" name="email" required>
-                </div>
-                <div class="mb-3">
-                  <label for="contact" class="form-label">Contact</label>
-                  <input type="text" class="form-control" id="contact" 
-                         [(ngModel)]="registerData.contact" name="contact" 
-                         placeholder="+23212345678" 
-                         pattern="^\\+232\\d{8}$" required>
-                  <small class="form-text text-muted">Format: +232 followed by 8 digits (e.g., +23288045678)</small>
-                </div>
-                <div class="mb-3">
-                  <label for="address" class="form-label">Address</label>
-                  <textarea class="form-control" id="address" 
-                            [(ngModel)]="registerData.address" name="address" required></textarea>
-                </div>
-                <div class="mb-3">
-                  <label for="password" class="form-label">Password</label>
-                  <input type="password" class="form-control" id="password" 
-                         [(ngModel)]="registerData.password" name="password" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Register</button>
-                <a routerLink="/login" class="btn btn-link">Already have an account? Login</a>
-              </form>
-
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.css']
 })
 export class RegisterComponent {
   registerData: RegisterRequest = {

@@ -71,11 +71,24 @@
         </div>
         <div class="card-body">
           <div class="mb-3" *ngIf="pendingCustomers.length > 0">
-            <input type="text" 
-                   class="form-control" 
-                   [(ngModel)]="searchTermCustomers" 
-                   (ngModelChange)="filterPendingCustomers()"
-                   placeholder="🔍 Search by name, email, or contact...">
+            <div class="row g-2">
+              <div class="col-md-8">
+                <input type="text" 
+                       class="form-control" 
+                       [(ngModel)]="searchTermCustomers" 
+                       (ngModelChange)="filterPendingCustomers()"
+                       placeholder="🔍 Search by name, email, or contact...">
+              </div>
+              <div class="col-md-4">
+                <select class="form-select" 
+                        [(ngModel)]="filterCustomerStatus"
+                        (ngModelChange)="filterPendingCustomers()">
+                  <option value="ALL">All Status</option>
+                  <option value="PENDING">Pending</option>
+                  <option value="APPROVED">Approved</option>
+                </select>
+              </div>
+            </div>
           </div>
           <div *ngIf="pendingCustomers.length === 0" class="alert alert-info">
             No pending customers
@@ -100,11 +113,16 @@
                   <td>{{ user.email }}</td>
                   <td>{{ user.contact }}</td>
                   <td>{{ user.address }}</td>
-                  <td>
-                    <button class="btn btn-success btn-sm me-2" 
+                  <td class="text-nowrap">
+                    <button class="btn btn-success btn-sm" 
                             (click)="approveCustomer(user.id!)"
                             title="Approve customer">
                       <i class="bi bi-check-circle"></i>
+                    </button>
+                    <button class="btn btn-primary btn-sm" 
+                            (click)="editUser(user)"
+                            title="Edit customer">
+                      <i class="bi bi-pencil"></i>
                     </button>
                     <button class="btn btn-danger btn-sm" 
                             (click)="deleteUser(user.id!)"
@@ -126,11 +144,33 @@
         </div>
         <div class="card-body">
           <div class="mb-3" *ngIf="shipments.length > 0">
-            <input type="text" 
-                   class="form-control" 
-                   [(ngModel)]="searchTermShipments" 
-                   (ngModelChange)="filterShipments()"
-                   placeholder="🔍 Search by ID, origin, destination, status, or tracking number...">
+            <div class="row g-2">
+              <div class="col-md-5">
+                <input type="text" 
+                       class="form-control" 
+                       [(ngModel)]="searchTermShipments" 
+                       (ngModelChange)="filterShipments()"
+                       placeholder="🔍 Search by ID, origin, destination...">
+              </div>
+              <div class="col-md-4">
+                <input type="text" 
+                       class="form-control" 
+                       [(ngModel)]="filterShipmentCustomer" 
+                       (ngModelChange)="filterShipments()"
+                       placeholder="Filter by customer name...">
+              </div>
+              <div class="col-md-3">
+                <select class="form-select" 
+                        [(ngModel)]="filterShipmentStatus"
+                        (ngModelChange)="filterShipments()">
+                  <option value="ALL">All Status</option>
+                  <option value="REQUESTED">Requested</option>
+                  <option value="APPROVED">Approved</option>
+                  <option value="IN_TRANSIT">In Transit</option>
+                  <option value="DELIVERED">Delivered</option>
+                </select>
+              </div>
+            </div>
           </div>
           <div *ngIf="shipments.length === 0" class="alert alert-info">
             No shipments yet
@@ -165,25 +205,29 @@
                       {{ shipment.status }}
                     </span>
                   </td>
-                  <td>
-                    <button class="btn btn-success btn-sm me-1" 
-                            (click)="approveShipment(shipment.id!)"
-                            *ngIf="shipment.status === 'REQUESTED'">
-                      <i class="bi bi-check-circle"></i> Approve
-                    </button>
-                    <select class="form-select form-select-sm mb-1" 
-                            (change)="updateShipmentStatus(shipment.id!, $event)"
-                            [value]="shipment.status">
-                      <option value="REQUESTED">REQUESTED</option>
-                      <option value="APPROVED">APPROVED</option>
-                      <option value="IN_TRANSIT">IN TRANSIT</option>
-                      <option value="DELIVERED">DELIVERED</option>
-                    </select>
-                    <button class="btn btn-danger btn-sm" 
-                            (click)="deleteShipment(shipment.id!)"
-                            title="Delete shipment">
-                      <i class="bi bi-trash"></i>
-                    </button>
+                  <td class="text-nowrap">
+                    <div class="d-flex align-items-center gap-1">
+                      <button class="btn btn-success btn-sm" 
+                              (click)="approveShipment(shipment.id!)"
+                              *ngIf="shipment.status === 'REQUESTED'"
+                              title="Approve shipment">
+                        <i class="bi bi-check-circle"></i>
+                      </button>
+                      <select class="form-select form-select-sm" 
+                              (change)="updateShipmentStatus(shipment.id!, $event)"
+                              [value]="shipment.status"
+                              style="width: auto; min-width: 120px;">
+                        <option value="REQUESTED">REQUESTED</option>
+                        <option value="APPROVED">APPROVED</option>
+                        <option value="IN_TRANSIT">IN TRANSIT</option>
+                        <option value="DELIVERED">DELIVERED</option>
+                      </select>
+                      <button class="btn btn-danger btn-sm" 
+                              (click)="deleteShipment(shipment.id!)"
+                              title="Delete shipment">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -199,11 +243,34 @@
         </div>
         <div class="card-body">
           <div class="mb-3" *ngIf="allUsers.length > 0">
-            <input type="text" 
-                   class="form-control" 
-                   [(ngModel)]="searchTermUsers" 
-                   (ngModelChange)="filterAllUsers()"
-                   placeholder="🔍 Search by name, email, contact, or role...">
+            <div class="row g-2">
+              <div class="col-md-6">
+                <input type="text" 
+                       class="form-control" 
+                       [(ngModel)]="searchTermUsers" 
+                       (ngModelChange)="filterAllUsers()"
+                       placeholder="🔍 Search by name, email, or contact...">
+              </div>
+              <div class="col-md-3">
+                <select class="form-select" 
+                        [(ngModel)]="filterUserRole"
+                        (ngModelChange)="filterAllUsers()">
+                  <option value="ALL">All Roles</option>
+                  <option value="CUSTOMER">Customer</option>
+                  <option value="ADMIN">Admin</option>
+                  <option value="SUPER_ADMIN">Super Admin</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <select class="form-select" 
+                        [(ngModel)]="filterUserStatus"
+                        (ngModelChange)="filterAllUsers()">
+                  <option value="ALL">All Status</option>
+                  <option value="PENDING">Pending</option>
+                  <option value="APPROVED">Approved</option>
+                </select>
+              </div>
+            </div>
           </div>
           <div *ngIf="filteredAllUsers.length === 0 && allUsers.length > 0" class="alert alert-warning">
             <i class="bi bi-search"></i> No users match your search.
@@ -217,6 +284,7 @@
                   <th>Contact</th>
                   <th>Role</th>
                   <th>Status</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -232,6 +300,18 @@
                       {{ user.status }}
                     </span>
                   </td>
+                  <td class="text-nowrap">
+                    <button class="btn btn-primary btn-sm" 
+                            (click)="editUser(user)"
+                            title="Edit user">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn btn-danger btn-sm" 
+                            (click)="deleteUser(user.id!)"
+                            title="Delete user">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -241,3 +321,111 @@
 
 
     </div>
+
+<
+!-- Edit User Modal -->
+<div class="modal fade" [class.show]="showEditUserModal" [style.display]="showEditUserModal ? 'block' : 'none'" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">
+          <i class="bi bi-pencil"></i> Edit User
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="closeEditUserModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">
+                <i class="bi bi-person"></i> First Name <span class="text-danger">*</span>
+              </label>
+              <input type="text" 
+                     class="form-control" 
+                     [(ngModel)]="editingUser.firstName" 
+                     name="firstName"
+                     required>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">
+                <i class="bi bi-person"></i> Last Name <span class="text-danger">*</span>
+              </label>
+              <input type="text" 
+                     class="form-control" 
+                     [(ngModel)]="editingUser.lastName" 
+                     name="lastName"
+                     required>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="bi bi-envelope"></i> Email <span class="text-danger">*</span>
+            </label>
+            <input type="email" 
+                   class="form-control" 
+                   [(ngModel)]="editingUser.email" 
+                   name="email"
+                   required
+                   readonly>
+            <small class="text-muted">Email cannot be changed</small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="bi bi-telephone"></i> Contact <span class="text-danger">*</span>
+            </label>
+            <input type="text" 
+                   class="form-control" 
+                   [(ngModel)]="editingUser.contact" 
+                   name="contact"
+                   placeholder="+23212345678"
+                   required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="bi bi-geo-alt"></i> Address
+            </label>
+            <textarea class="form-control" 
+                      [(ngModel)]="editingUser.address" 
+                      name="address"
+                      rows="3"></textarea>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">
+                <i class="bi bi-person-badge"></i> Role
+              </label>
+              <input type="text" 
+                     class="form-control" 
+                     [value]="editingUser.role" 
+                     readonly>
+              <small class="text-muted">Role cannot be changed</small>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">
+                <i class="bi bi-check-circle"></i> Status
+              </label>
+              <input type="text" 
+                     class="form-control" 
+                     [value]="editingUser.status" 
+                     readonly>
+              <small class="text-muted">Status cannot be changed here</small>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeEditUserModal()">
+          <i class="bi bi-x-circle"></i> Cancel
+        </button>
+        <button type="button" class="btn btn-primary" (click)="saveUserChanges()">
+          <i class="bi bi-check-circle"></i> Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" [class.show]="showEditUserModal" *ngIf="showEditUserModal" (click)="closeEditUserModal()"></div>

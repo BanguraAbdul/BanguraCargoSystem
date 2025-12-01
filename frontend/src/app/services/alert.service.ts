@@ -11,9 +11,9 @@ export class AlertService {
       icon: 'success',
       title: title,
       text: message,
-      confirmButtonColor: '#28a745',
-      timer: 3000,
-      timerProgressBar: true
+      confirmButtonColor: '#00a896',
+      confirmButtonText: 'OK'
+      // Removed timer - alert stays until user clicks OK
     });
   }
 
@@ -22,7 +22,8 @@ export class AlertService {
       icon: 'error',
       title: title,
       text: message,
-      confirmButtonColor: '#dc3545'
+      confirmButtonColor: '#c1121f',
+      confirmButtonText: 'OK'
     });
   }
 
@@ -31,7 +32,8 @@ export class AlertService {
       icon: 'warning',
       title: title,
       text: message,
-      confirmButtonColor: '#ffc107'
+      confirmButtonColor: '#f4a261',
+      confirmButtonText: 'OK'
     });
   }
 
@@ -40,7 +42,8 @@ export class AlertService {
       icon: 'info',
       title: title,
       text: message,
-      confirmButtonColor: '#17a2b8'
+      confirmButtonColor: '#4a90e2',
+      confirmButtonText: 'OK'
     });
   }
 
@@ -50,8 +53,8 @@ export class AlertService {
       title: title,
       text: message,
       showCancelButton: true,
-      confirmButtonColor: '#28a745',
-      cancelButtonColor: '#dc3545',
+      confirmButtonColor: '#00a896',
+      cancelButtonColor: '#c1121f',
       confirmButtonText: 'Yes',
       cancelButtonText: 'No'
     });

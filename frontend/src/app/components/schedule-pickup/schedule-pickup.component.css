@@ -51,3 +51,33 @@
 .btn-primary:hover {
   background: #e55a00;
 }
+
+
+/* Back Button Styles */
+.back-button-container {
+  padding: 20px 0 10px 0;
+}
+
+.btn-back {
+  border: 2px solid var(--primary-blue);
+  color: var(--primary-blue);
+  background: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-back:hover {
+  background: var(--primary-blue);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(30, 58, 95, 0.2);
+}
+
+.btn-back i {
+  font-size: 1.1rem;
+}

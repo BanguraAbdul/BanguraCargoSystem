@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 interface RateCalculation {
   weight: number;
@@ -18,6 +19,11 @@ interface RateCalculation {
   styleUrls: ['./shipping-rates.component.css']
 })
 export class ShippingRatesComponent {
+  constructor(private router: Router) {}
+
+  goToHome() {
+    this.router.navigate(['/']);
+  }
   weight: number = 1;
   destination: string = 'domestic';
   calculatedRates: RateCalculation[] = [];

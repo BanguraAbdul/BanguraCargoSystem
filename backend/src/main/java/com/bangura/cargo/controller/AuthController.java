@@ -34,6 +34,22 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
     
+    @Autowired
+    private com.bangura.cargo.service.ShipmentService shipmentService;
+    
+    @RequestMapping(value = "/track/{trackingNumber}", method = RequestMethod.GET)
+    public ResponseEntity<?> trackShipment(@PathVariable String trackingNumber) {
+        try {
+            com.bangura.cargo.model.Shipment shipment = shipmentService.getShipmentByTrackingNumber(trackingNumber);
+            return ResponseEntity.ok(shipment);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(java.util.Map.of(
+                "message", "Shipment not found with tracking number: " + trackingNumber,
+                "success", false
+            ));
+        }
+    }
+    
     @RequestMapping(value = "/register", method = RequestMethod.POST)
     public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest request) {
         try {

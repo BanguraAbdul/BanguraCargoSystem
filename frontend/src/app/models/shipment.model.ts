@@ -49,9 +49,9 @@ export interface Shipment {
   // System Fields
   trackingNumber?: string;
   status?: 'REQUESTED' | 'APPROVED' | 'IN_TRANSIT' | 'DELIVERED' | 'CANCELLED';
-  requestDate?: Date;
-  createdAt?: Date;
-  approvalDate?: Date;
+  requestDate?: Date | string;
+  createdAt?: Date | string;
+  approvalDate?: Date | string;
 }
 
 export interface ShipmentRequest {

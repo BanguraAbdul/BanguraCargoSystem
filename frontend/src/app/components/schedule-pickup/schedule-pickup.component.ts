@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AlertService } from '../../services/alert.service';
 
 @Component({
@@ -16,8 +17,13 @@ export class SchedulePickupComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private router: Router
   ) {}
+
+  goToHome() {
+    this.router.navigate(['/']);
+  }
 
   ngOnInit() {
     const today = new Date();
