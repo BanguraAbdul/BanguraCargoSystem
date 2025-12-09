@@ -14,11 +14,7 @@ export const routes: Routes = [
     path: 'register', 
     loadComponent: () => import('./components/register/register.component').then(m => m.RegisterComponent)
   },
-  { 
-    path: 'create-shipment', 
-    loadComponent: () => import('./components/create-shipment/create-shipment.component').then(m => m.CreateShipmentComponent),
-    canActivate: [authGuard]
-  },
+
   { 
     path: 'edit-shipment/:id', 
     loadComponent: () => import('./components/edit-shipment/edit-shipment.component').then(m => m.EditShipmentComponent),
@@ -27,15 +23,6 @@ export const routes: Routes = [
   { 
     path: 'rates', 
     loadComponent: () => import('./components/shipping-rates/shipping-rates.component').then(m => m.ShippingRatesComponent)
-  },
-  { 
-    path: 'schedule-pickup', 
-    loadComponent: () => import('./components/schedule-pickup/schedule-pickup.component').then(m => m.SchedulePickupComponent),
-    canActivate: [authGuard]
-  },
-  { 
-    path: 'manage-return', 
-    loadComponent: () => import('./components/manage-returns/manage-returns.component').then(m => m.ManageReturnsComponent)
   },
   { 
     path: 'international-guide', 

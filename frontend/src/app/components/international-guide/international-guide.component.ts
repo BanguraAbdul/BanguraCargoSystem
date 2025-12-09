@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 
 @Component({
   selector: 'app-international-guide',
@@ -10,6 +10,11 @@ import { RouterLink } from '@angular/router';
   styleUrls: ['./international-guide.component.css']
 })
 export class InternationalGuideComponent {
+  constructor(private router: Router) {}
+
+  goToHome() {
+    this.router.navigate(['/']);
+  }
   countries = [
     { name: 'United States', deliveryDays: '6-8', customsRequired: true },
     { name: 'United Kingdom', deliveryDays: '5-7', customsRequired: true },

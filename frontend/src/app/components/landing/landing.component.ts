@@ -243,29 +243,20 @@ export class LandingComponent {
     
     // Check if user is authenticated
     if (this.authService.isAuthenticated()) {
-      console.log('✅ User is authenticated, navigating to create-shipment');
-      // User is logged in, redirect to create shipment page
-      this.router.navigate(['/create-shipment']);
+      console.log('✅ User is authenticated, checking role and redirecting to dashboard');
+      // User is logged in, redirect to their dashboard where they can create shipment
+      const role = localStorage.getItem('role');
+      if (role === 'CUSTOMER') {
+        this.router.navigate(['/customer']);
+      } else if (role === 'ADMIN') {
+        this.router.navigate(['/admin']);
+      } else if (role === 'SUPER_ADMIN') {
+        this.router.navigate(['/super-admin']);
+      }
     } else {
-      console.log('❌ User is NOT authenticated, showing alert and login modal');
-      // User not logged in, show login modal with message
-      this.alertService.info('Please login to create a shipment', 'Login Required').then((result) => {
-        console.log('Alert closed, opening login modal');
-        this.openLoginModal();
-      });
-    }
-  }
-
-  handleSchedulePickup() {
-    // Check if user is authenticated
-    if (this.authService.isAuthenticated()) {
-      // User is logged in, redirect to schedule pickup page
-      this.router.navigate(['/schedule-pickup']);
-    } else {
-      // User not logged in, show login modal with message
-      this.alertService.info('Please login to schedule a pickup', 'Login Required').then(() => {
-        this.openLoginModal();
-      });
+      console.log('❌ User is NOT authenticated, showing login modal');
+      // User not logged in, show login modal directly
+      this.openLoginModal();
     }
   }
 

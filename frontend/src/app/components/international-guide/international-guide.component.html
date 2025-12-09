@@ -1,5 +1,10 @@
 <div class="guide-page">
   <div class="container">
+    <div class="back-button-container">
+      <button class="btn btn-outline-primary btn-back" (click)="goToHome()">
+        <i class="bi bi-house-door"></i> Back to Home
+      </button>
+    </div>
     <div class="page-header">
       <h1><i class="fas fa-globe-americas"></i> International Shipping Guide</h1>
       <p>Everything you need to know about shipping internationally</p>
@@ -59,9 +64,6 @@
           <h3><i class="fas fa-calculator"></i> Quick Tools</h3>
           <a routerLink="/rates" class="tool-link">
             <i class="fas fa-dollar-sign"></i> Calculate Rates
-          </a>
-          <a routerLink="/schedule-pickup" class="tool-link">
-            <i class="fas fa-calendar"></i> Schedule Pickup
           </a>
           <a routerLink="/tracking" class="tool-link">
             <i class="fas fa-search"></i> Track Shipment
